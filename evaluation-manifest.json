@@ -37,7 +37,7 @@
   },
   "team_members": [
     {
-      "registered_name": "<FILL BEFORE SUBMISSION>",
+      "registered_name": "MD. Nishadul Islam Chy Shezan",
       "github_username": "Shinzuu",
       "major_contribution": "Integrator for this repository, and owner of required item 1. Built the dataset layer: the seeded case, the fixture validator, and the hard-edge finder that derives the four edge types from whatever data is loaded. Owned the shared files \u2014 the app shell, the state module, the stylesheet, the page and the manifest \u2014 and performed every merge, deploy and live verification.",
       "evidence_paths_or_commits": [
@@ -49,7 +49,7 @@
       ]
     },
     {
-      "registered_name": "<FILL BEFORE SUBMISSION>",
+      "registered_name": "Rimjhim Dey",
       "github_username": "RimjhimD",
       "major_contribution": "Owner of required item 2. Built the grading engine as a pure module with its test suite written before the interface \u2014 grade points per subject, the GPA calculation with the optional-subject rule and the 5.00 cap, letter grades, the compulsory-failure cancellation, and the checking-list derivation \u2014 plus the results table.",
       "evidence_paths_or_commits": [
@@ -59,7 +59,7 @@
       ]
     },
     {
-      "registered_name": "<FILL BEFORE SUBMISSION>",
+      "registered_name": "Robiul Hassan",
       "github_username": "MDRobiulhassan",
       "major_contribution": "Owner of required item 3. Built the per-student trace: every subject with the real mark used, the grade point it produced and the rule sentence that decided it, the named subject that cancelled a strong average, and the written-out GPA arithmetic for that individual student.",
       "evidence_paths_or_commits": [
@@ -67,7 +67,7 @@
       ]
     },
     {
-      "registered_name": "<FILL BEFORE SUBMISSION>",
+      "registered_name": "Dip Jyoti Ghosh",
       "github_username": "Dip-it11",
       "major_contribution": "Owner of required item 4. Built the office checking list: the three lists required by clarification R-29 with their counts, each student's specific reason for appearing, and cross-list badging for students who qualify for more than one.",
       "evidence_paths_or_commits": [

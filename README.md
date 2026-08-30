@@ -128,10 +128,10 @@ recorded as done.
 
 | Member | GitHub | Major contribution |
 |---|---|---|
-| *(registered name)* | `Shinzuu` | Integrator: the app shell, the state module, the shared stylesheet and page, every merge, deploy and live verification. Also required item 1 — the seeded case, the fixture validator, and the hard-edge finder that derives the four edge types from whatever data is loaded. |
-| *(registered name)* | `RimjhimD` | Required item 2 — the grading engine as a pure tested module: grade points per subject, the GPA calculation with the optional-subject rule and the 5.00 cap, letter grades, the compulsory-failure cancellation and the checking-list derivation, plus the results table. |
-| *(registered name)* | `MDRobiulhassan` | Required item 3 — the per-student trace: every subject with the real mark used, the grade point it produced and the rule sentence that decided it, the named subject that cancelled a strong average, and the written-out GPA arithmetic. |
-| *(registered name)* | `Dip-it11` | Required item 4 — the office checking list: the three lists required by R-29 with counts, each student's specific reason for appearing, and cross-list badging. |
+| MD. Nishadul Islam Chy Shezan | `Shinzuu` | Integrator: the app shell, the state module, the shared stylesheet and page, every merge, deploy and live verification. Also required item 1 — the seeded case, the fixture validator, and the hard-edge finder that derives the four edge types from whatever data is loaded. |
+| Rimjhim Dey | `RimjhimD` | Required item 2 — the grading engine as a pure tested module: grade points per subject, the GPA calculation with the optional-subject rule and the 5.00 cap, letter grades, the compulsory-failure cancellation and the checking-list derivation, plus the results table. |
+| Robiul Hassan | `MDRobiulhassan` | Required item 3 — the per-student trace: every subject with the real mark used, the grade point it produced and the rule sentence that decided it, the named subject that cancelled a strong average, and the written-out GPA arithmetic. |
+| Dip Jyoti Ghosh | `Dip-it11` | Required item 4 — the office checking list: the three lists required by R-29 with counts, each student's specific reason for appearing, and cross-list badging. |
 
 The same information, with per-member evidence paths, is in `evaluation-manifest.json`.
 
