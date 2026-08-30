@@ -9,7 +9,7 @@
   "pre_event_materials": [
     "Generic React starter kit written by the team before the event and committed as the repository's first commit, 'Starter kit baseline'. Vite + React 19 + Tailwind 4 shell (index.html, src/main.jsx, src/App.jsx, src/app.css), a localStorage/Supabase storage adapter (src/lib/db.js), a library of thirteen generic self-contained capability modules with their own tests (src/recipes/), five accessible colour palettes (src/themes/), and helper scripts (scripts/preflight.sh, scripts/smoke-live.sh, scripts/compress-video.sh). It contains no solution to P08 or to any other released problem; it was written before the problems were known. Declared in full in EVENT.md.",
     "Documentation templates from the same starter kit: README-TEMPLATE.md, SUBMISSION-TEMPLATE.md, LICENSES.md, BOARD.md, DEPLOY.md, CLAUDE.md.",
-    "Note on removal: the unused parts of that starter kit \u2014 the thirteen capability modules under src/recipes/, the storage adapter src/lib/db.js, the placeholder demo component, the four unused colour palettes, the Supabase schema templates and the documentation templates \u2014 were deleted from this repository before submission rather than left as dead code. The @supabase/supabase-js dependency was removed with them. They are declared here because they were present before 6:00 PM, and their removal is visible in the git history."
+    "Note on removal: the unused parts of that starter kit — the thirteen capability modules under src/recipes/, the storage adapter src/lib/db.js, the placeholder demo component, the four unused colour palettes, the Supabase schema templates and the documentation templates — were deleted from this repository before submission rather than left as dead code. The @supabase/supabase-js dependency was removed with them. They are declared here because they were present before 6:00 PM, and their removal is visible in the git history."
   ],
   "sample_data": {
     "loads_published_fixture": true,
@@ -28,18 +28,18 @@
     },
     "R3": {
       "status": "complete",
-      "evidence": "Complete. 'Trace' panel (src/features/StudentTrace.jsx). For the selected student it shows every one of the seven subjects with the real mark used \u2014 for a practical subject as 'theory + practical = mark' \u2014 the grade point, and the rule sentence that produced it. For a student with a strong average who still failed, a banner names the causing subject and shows the uncancelled average beside the final 0.00; 'How this GPA was reached' writes out that student's own arithmetic. An absent subject renders AB with the rule 'absent \u2014 AB, grade point 0', which is a distinct output from a scored zero."
+      "evidence": "Complete. 'Trace' panel (src/features/StudentTrace.jsx). For the selected student it shows every one of the seven subjects with the real mark used — for a practical subject as 'theory + practical = mark' — the grade point, and the rule sentence that produced it. For a student with a strong average who still failed, a banner names the causing subject and shows the uncancelled average beside the final 0.00; 'How this GPA was reached' writes out that student's own arithmetic. An absent subject renders AB with the rule 'absent — AB, grade point 0', which is a distinct output from a scored zero."
     },
     "R4": {
       "status": "complete",
-      "evidence": "Complete. 'Checking list before results go out' panel (src/features/CheckingLists.jsx), fed by checkingLists() in src/lib/grading.js. Three lists with counts \u2014 optional subject rule 25, practical fail 10, absent 2 \u2014 each stating what puts a student on it, each entry naming the student's specific reason, and students qualifying for more than one list appearing on each with an 'also on' badge."
+      "evidence": "Complete. 'Checking list before results go out' panel (src/features/CheckingLists.jsx), fed by checkingLists() in src/lib/grading.js. Three lists with counts — optional subject rule 25, practical fail 10, absent 2 — each stating what puts a student on it, each entry naming the student's specific reason, and students qualifying for more than one list appearing on each with an 'also on' badge."
     }
   },
   "team_members": [
     {
       "registered_name": "MD. Nishadul Islam Chy Shezan",
       "github_username": "Shinzuu",
-      "major_contribution": "Integrator for this repository, and owner of required item 1. Built the dataset layer: the seeded case, the fixture validator, and the hard-edge finder that derives the four edge types from whatever data is loaded. Owned the shared files \u2014 the app shell, the state module, the stylesheet, the page and the manifest \u2014 and performed every merge, deploy and live verification.",
+      "major_contribution": "Integrator for this repository, and owner of required item 1. Built the dataset layer: the seeded case, the fixture validator, and the hard-edge finder that derives the four edge types from whatever data is loaded. Owned the shared files — the app shell, the state module, the stylesheet, the page and the manifest — and performed every merge, deploy and live verification.",
       "evidence_paths_or_commits": [
         "src/data/seed-p08.json",
         "src/lib/dataset.js",
@@ -51,7 +51,7 @@
     {
       "registered_name": "Rimjhim Dey",
       "github_username": "RimjhimD",
-      "major_contribution": "Owner of required item 2. Built the grading engine as a pure module with its test suite written before the interface \u2014 grade points per subject, the GPA calculation with the optional-subject rule and the 5.00 cap, letter grades, the compulsory-failure cancellation, and the checking-list derivation \u2014 plus the results table.",
+      "major_contribution": "Owner of required item 2. Built the grading engine as a pure module with its test suite written before the interface — grade points per subject, the GPA calculation with the optional-subject rule and the 5.00 cap, letter grades, the compulsory-failure cancellation, and the checking-list derivation — plus the results table.",
       "evidence_paths_or_commits": [
         "src/lib/grading.js",
         "src/lib/grading.test.mjs",
@@ -81,13 +81,14 @@
     "The GPA is rounded once at two decimal places and the letter grade is derived from that rounded value, so the letter and the number shown can never disagree at a band boundary.",
     "A compulsory failure zeroes the GPA and sets the letter to F, but leaves every subject grade point and the uncancelled average populated, because clarification R-13 requires the uncancelled average to stay visible in the trace.",
     "An absent subject and a subject scored zero are distinct values end to end: absent carries a null mark and renders as AB, zero renders as 0 with its own rule text, per the problem's explicit constraint that the two must not produce the same output.",
-    "The application is built around the exam office's actual task \u2014 load, review, sign off, publish \u2014 rather than stopping at a read-only report. Marks arrive as a spreadsheet because that is what a school has; results leave as a CSV for the office and a printed marksheet for the parent."
+    "The application is built around the exam office's actual task — load, review, sign off, publish — rather than stopping at a read-only report. Marks arrive as a spreadsheet because that is what a school has; results leave as a CSV for the office and a printed marksheet for the parent."
   ],
   "known_limitations": [
-    "Nothing is persisted. Marks live in memory for the session and reloading restores the seeded case. Deliberate for a judged demo, but it means edits cannot be saved.",
-    "Marks cannot be edited in the interface. The app computes and explains results; it does not enter them. Correcting a wrong mark means loading a corrected case.",
+    "Marks are not persisted. A case lives in memory for the session and reloading restores the seeded case, so edits cannot be saved. The one exception is the school name printed on a marksheet, kept in localStorage so it is not retyped per sheet; no student data is written anywhere.",
+    "Marks cannot be edited in the interface. The app computes and explains results; it does not enter them. Correcting a wrong mark means re-importing the sheet.",
     "The hard-edge summary on the landing screen shows one representative per edge type with a count of the rest; the full membership of each category is in the checking list.",
-    "The grading rules are exactly those in the problem statement and its clarifications and no others. This is not a general board rule engine \u2014 different pass marks or a different optional-subject rule would need the constants changed."
+    "Long lists render 100 rows at a time behind a footer stating how many are held back and a control that lifts it. A display budget, not a data limit: every count, the overlap figure, the bulk sign-off and the CSV export read the whole set. Added after measuring a 5,000-student sheet at 50,101 DOM nodes and 1,396 ms per keystroke in the roster search.",
+    "The grading rules are exactly those in the problem statement and its clarifications and no others. This is not a general board rule engine — different pass marks or a different optional-subject rule would need the constants changed."
   ],
   "ai_tools_used": [
     {

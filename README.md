@@ -62,17 +62,32 @@ published.
    into the job the office is actually doing. The 37 list entries collapse to the **27
    distinct students** who need a human eye, each showing every reason they were flagged.
    Tick them off and the counter and progress bar move; nothing reads as ready to publish
-   until all 27 are signed off. Then **Export results (CSV)** writes the office's file and
-   **Print marksheet** prints the open student's trace as a statement of result.
+   until all 27 are signed off. Then **Export results (CSV)** writes the office's file.
+   Marksheets print one student at a time, from that student's trace — a school does not
+   print eighty at once — so the desk points there rather than offering it here.
 
 ### Bonus features
 
 All three bonus features listed in the problem statement are implemented.
 
-**A printable individual marksheet.** Open any student, then **Print marksheet**. The
-interface drops away and the trace prints as a statement of result with a ruled heading —
-every subject, the mark used, the grade point and the rule that decided it. That is the
-paper a school hands a parent.
+**A printable individual marksheet.** Open any student — from the roster, the checking
+list or the sign-off desk — and press **Print marksheet**. What prints is a document, not
+a screenshot of the app: a ruled masthead, the student's particulars, a bordered table of
+all seven subjects with theory, practical, total, grade point and letter for each, the
+total marks obtained, a boxed GPA / letter grade / PASSED-or-FAILED strip, signature lines
+for the class teacher and head teacher, and an issue date.
+
+The trace and the marksheet are deliberately different documents. The trace explains which
+rule produced each number, which is what a judge or a teacher fielding a query needs; the
+marksheet is what a school hands a student, and it carries no working and no interface. A
+failed compulsory subject leaves a 0.00 beside five good grades, so the sheet carries a
+remark naming the subjects and the average before cancellation — otherwise it reads as a
+mistake. An absence prints as `AB`, never as a zero.
+
+The marks file carries no school name — the published fixtures have a case id and nothing
+else — so rather than invent one, **Name on the printed sheet** on the trace view sets it
+and remembers it. Left blank the sheet omits the line, which suits a school printing onto
+its own letterhead.
 
 **Paste or upload a marks sheet, reporting which rows were rejected and why.** Under
 required item 1, press **Import marks**. It takes a paste straight out of a spreadsheet —
@@ -215,22 +230,44 @@ as complete, and each member tested a requirement they had not built.
 - **Decision:** Sign-off state is in memory only. A school's marks are never written to
   storage or to a server, and a judge who reloads gets a clean desk.
 
+## What the loader refuses
+
+A result system's job is to catch a wrong entry before results are published, so a case
+that cannot be graded is refused with a message naming the row and the reason, rather than
+loaded into a plausible-looking GPA. The previous roster stays on screen; a bad paste never
+empties the app.
+
+| Refused | Why it has to be |
+|---|---|
+| A repeated student id | Everything downstream identifies a student by id — the selection, the sign-off set, the checking lists. Two students on one id showed the first one's trace for both and printed the first one's marksheet under the second one's name. |
+| Theory above 75, practical above 25, a combined mark above 100, or anything negative | R-11 fixes the paper totals. Unchecked, a `84` typed as `840` scored grade point 5.0 and lifted the student to an A. |
+| A `compulsory` list that is not exactly six subjects | The divisor is fixed at six by R-13, so the count is part of the rule. Seven subjects at grade point 3.0 summed to 21 and divided by 6 reported GPA 3.67 and grade A- where the honest average is 3.00 and grade B. |
+| The same subject twice in `compulsory`, or a repeated subject code | Six entries passes a count check while summing one subject twice and never grading the one it displaced. |
+| An optional subject that is also compulsory | The same grade point would be counted once in the six and again as the optional bonus. |
+
+Both import paths apply the same rules: `parseDataset` for a pasted or uploaded case, and
+the same mark check per row in the marks-sheet importer, which reports the offending
+subject in that row's rejection reason. All 25 published cases pass every rule untouched.
+
 ## Known limitations
 
-- Nothing is persisted. Marks live in memory for the session and reloading restores the
-  seeded case. Deliberate for a judged demo, but it means edits cannot be saved.
+- Marks are not persisted. A case lives in memory for the session and reloading restores
+  the seeded case, so edits cannot be saved. The one exception is the school name for the
+  printed sheet, which is kept in `localStorage` because retyping it per marksheet would be
+  absurd; no student data is ever written anywhere.
 - Marks cannot be edited cell-by-cell in the interface. The application computes and
   explains results; it does not enter them. A corrected mark is applied by re-importing the
   sheet, which is how a school would fix a spreadsheet anyway.
 - The hard-edge summary shows one representative per edge type with a count of the rest;
   the full membership of each category is in the checking list.
-- A `compulsory` list of a length other than six is accepted and still divided by six, per
-  the problem's fixed six-subject rule. A malformed case could therefore produce a high GPA
-  without warning.
-- On a narrow phone the trace table scrolls horizontally within its own panel to reach the
-  rule column.
+- Long lists render 100 rows at a time behind a footer that states how many are held back
+  and a control that lifts it. This is a display budget, not a data limit — every count,
+  the overlap figure, the bulk sign-off and the CSV export read the whole set. It exists
+  because a district-sized sheet of 5,000 students put 50,101 nodes in the page and cost
+  1,396 ms for a single keystroke in the search box.
 - The grading rules are exactly those in the problem statement and its clarifications and
-  no others. This is not a general board rule engine.
+  no others. This is not a general board rule engine — different pass marks or a different
+  optional-subject rule would need the constants changed.
 
 ## Repository records
 
