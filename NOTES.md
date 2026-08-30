@@ -2,6 +2,13 @@
 
 One line each, newest on top. Chat evaporates; this file syncs.
 
+- T2/QA: an extra 8th subject in a student's `marks` does NOT add a trace row —
+  `StudentTrace` builds its seven rows from `dataset.compulsory` + the student's
+  `optional`, never from `Object.keys(result.subjects)`. Verified by rendering the
+  shipped component against such a case: seven rows, GPA correct. (Closes T1 F-03 as
+  not-reproducible.) The extra subject does still set `flags.practicalFail` — that is
+  T2-02, declined in triage.
+
 - T2/QA: `smoke-live.sh`'s staleness check FAILS against a perfectly current deploy.
   Vite's asset filename hash is not reproducible across machines: the deployed JS is
   byte-identical to a local build of the same commit, and the CSS differs only in
