@@ -187,7 +187,21 @@ export function parseMarksSheet(text, dataset) {
  * Every subject gets a column, not just the compulsory ones, because students
  * sit different optional subjects. A student's own optional carries a mark and
  * the others are blank; the parser only reads the columns a given student needs,
- * so this round-trips back through `parseMarksSheet` unchanged.
+ * so this round-trips back through `parseMarksSheet` — every student returns,
+ * with one deliberate exception noted below: a cell that had to be guarded comes
+ * back carrying its leading apostrophe.
+ *
+ * Cells are quoted, which the first version did not do and the comment above
+ * claimed anyway. A student named `Rahman, Md. Kamal` wrote a bare comma into
+ * the row, so every column after the name shifted one place and re-importing the
+ * downloaded template rejected that student with a reason about a subject
+ * ("optional subject \u201cCLASS 9\u201d is not one of this case's subjects") —
+ * the row was silently lost and the message pointed at the wrong thing. The
+ * parser already understood quotes; only the writer did not emit them.
+ *
+ * The same apostrophe guard the results export uses applies here too: a cell
+ * that opens with =, +, - or @ is a formula to a spreadsheet, and this file is
+ * meant to be opened in one.
  */
 export function toMarksSheet(dataset) {
   if (!dataset?.students?.length) return ''
@@ -203,5 +217,12 @@ export function toMarksSheet(dataset) {
     s.id, s.name, s.class, s.optional,
     ...codes.map((c) => cell(s.marks[c])),
   ])
-  return [header, ...rows].map((r) => r.join(',')).join('\n')
+
+  const safe = (v) => {
+    const t = String(v ?? '')
+    const guarded = /^[=+\-@\t\r]/.test(t) ? `'${t}` : t
+    return /[",\n\r]/.test(guarded) ? `"${guarded.replace(/"/g, '""')}"` : guarded
+  }
+
+  return [header, ...rows].map((r) => r.map(safe).join(',')).join('\n')
 }

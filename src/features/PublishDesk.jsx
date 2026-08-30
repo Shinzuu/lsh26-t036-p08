@@ -28,9 +28,20 @@ import { openTrace } from './TracePanel.jsx'
 import { useDataset, useSelected, useVerification } from '../lib/store.js'
 import { checkingLists } from '../lib/grading.js'
 
+/** The optional subject's mark, in the same form the compulsory columns use. */
+function optionalMark(r) {
+  const s = r.subjects?.[r.optional]
+  if (!s) return ''
+  return s.absent ? 'AB' : `${s.mark} (${s.gradePoint})`
+}
+
 function toCsv(dataset, results) {
   const codes = [...dataset.compulsory]
-  const head = ['Student ID', 'Name', 'Class', ...codes, 'Optional', 'Optional GP', 'GPA', 'Letter', 'Failed subjects']
+  // The optional subject's own mark belongs in the file. The first version
+  // exported its code and its grade point but not the mark behind them, so the
+  // office could not reconcile that column against the marks sheet the way it
+  // can for the six compulsory ones.
+  const head = ['Student ID', 'Name', 'Class', ...codes, 'Optional', 'Optional mark', 'Optional GP', 'GPA', 'Letter', 'Failed subjects']
   const rows = results.map((r) => {
     const cells = codes.map((c) => {
       const s = r.subjects?.[c]
@@ -39,7 +50,7 @@ function toCsv(dataset, results) {
     })
     return [
       r.id, r.name, r.class, ...cells,
-      r.optional, r.optionalGradePoint ?? '',
+      r.optional, optionalMark(r), r.optionalGradePoint ?? '',
       r.gpa.toFixed(2), r.letter,
       (r.failedCompulsory ?? []).join(' '),
     ]

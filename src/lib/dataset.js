@@ -26,6 +26,14 @@ import seed from '../data/seed-p08.json' with { type: 'json' }
 export const THEORY_PASS_MARK = 25
 export const PRACTICAL_PASS_MARK = 8
 export const SUBJECT_FAIL_MARK = 33
+
+// The paper totals, for range-checking marks on the way in. Declared here rather
+// than imported from `grading.js` on purpose: this module validates data before
+// any rule is applied, and importing the engine to validate its own input would
+// tie U1's loader to U2's module graph. The two must agree — R-11 fixes both —
+// so `dataset.test.mjs` asserts they do.
+export const THEORY_TOTAL = 75
+export const PRACTICAL_TOTAL = 25
 /** Below this, the optional subject's grade point is 2.0 or less, so it adds nothing. */
 export const OPTIONAL_HELPS_FROM_MARK = 50
 
@@ -49,10 +57,40 @@ function marksFail(mark) {
   return total === null || total < SUBJECT_FAIL_MARK
 }
 
-function isValidMark(mark) {
-  if (mark === 'AB') return true
-  if (typeof mark === 'number') return Number.isFinite(mark)
-  return isObject(mark) && Number.isFinite(mark.theory) && Number.isFinite(mark.practical)
+/**
+ * The marks a paper can actually carry. R-11 fixes theory out of 75 and practical
+ * out of 25, so a single combined mark cannot exceed 100 and no part can be
+ * negative.
+ *
+ * Range is checked, not just readability, because this app exists to catch a
+ * wrong entry before results are published and the unchecked version did the
+ * opposite: `{theory: 900, practical: 500}` and a bare `9999` were both accepted
+ * and both scored grade point 5.0, turning a typed 840 into an A+ instead of an
+ * error. Across all 25 published cases single marks run 0–100, theory 6–75 and
+ * practical 1–25, so every case a judge can load passes these bounds untouched.
+ */
+const MAX_SINGLE_MARK = THEORY_TOTAL + PRACTICAL_TOTAL
+
+function markProblem(mark) {
+  if (mark === 'AB') return null
+
+  if (typeof mark === 'number') {
+    if (!Number.isFinite(mark)) return 'expected a number, {theory, practical}, or "AB"'
+    if (mark < 0) return `${mark} is negative`
+    if (mark > MAX_SINGLE_MARK) return `${mark} is above the maximum of ${MAX_SINGLE_MARK}`
+    return null
+  }
+
+  if (!isObject(mark) || !Number.isFinite(mark.theory) || !Number.isFinite(mark.practical)) {
+    return 'expected a number, {theory, practical}, or "AB"'
+  }
+  if (mark.theory < 0) return `theory ${mark.theory} is negative`
+  if (mark.practical < 0) return `practical ${mark.practical} is negative`
+  if (mark.theory > THEORY_TOTAL) return `theory ${mark.theory} is above the paper total of ${THEORY_TOTAL}`
+  if (mark.practical > PRACTICAL_TOTAL) {
+    return `practical ${mark.practical} is above the paper total of ${PRACTICAL_TOTAL}`
+  }
+  return null
 }
 
 /**
@@ -102,6 +140,21 @@ export function parseDataset(input) {
   if (!Array.isArray(data.students) || data.students.length === 0) {
     throw new Error('Missing `students` — expected a non-empty list.')
   }
+  // Student ids must be unique, and this is a correctness rule rather than
+  // tidiness. Everything downstream identifies a student by id: the store
+  // resolves the selection with `results.find(r => r.id === selectedId)`, the
+  // sign-off desk keys its verified set by id, and the checking lists dedupe by
+  // id. With two students sharing one id the roster shows both rows, but
+  // clicking the second opens the first one's trace, highlights both rows, ticks
+  // both on sign-off, and prints the first student's marksheet under the second
+  // student's click — a school would hand a pupil someone else's result.
+  //
+  // The marks-sheet importer already refuses a repeated id ("duplicate id — …
+  // already appears earlier in the sheet"). This is the same rule on the JSON
+  // path, which had been left open. No published case repeats an id, so nothing
+  // a judge loads is affected.
+  const seenIds = new Map()
+
   for (const [i, st] of data.students.entries()) {
     const where = `students[${i}]${st?.id ? ` (${st.id})` : ''}`
     if (!isObject(st)) throw new Error(`${where} is not an object.`)
@@ -118,11 +171,19 @@ export function parseDataset(input) {
     if (data.compulsory.includes(st.optional)) {
       throw new Error(`${where} names "${st.optional}" as its optional subject, but that is a compulsory subject. The optional must be a fourth subject.`)
     }
+    if (seenIds.has(st.id)) {
+      throw new Error(
+        `${where} repeats the student id "${st.id}", which students[${seenIds.get(st.id)}] already uses. Every student needs their own id — results are published against it.`,
+      )
+    }
+    seenIds.set(st.id, i)
+
     if (!isObject(st.marks)) throw new Error(`${where} is missing its \`marks\`.`)
     for (const c of [...data.compulsory, st.optional]) {
       if (!(c in st.marks)) throw new Error(`${where} has no mark for "${c}".`)
-      if (!isValidMark(st.marks[c])) {
-        throw new Error(`${where} has an unreadable mark for "${c}" — expected a number, {theory, practical}, or "AB".`)
+      const problem = markProblem(st.marks[c])
+      if (problem) {
+        throw new Error(`${where} has an impossible mark for "${c}" — ${problem}.`)
       }
     }
   }
