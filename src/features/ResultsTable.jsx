@@ -165,30 +165,35 @@ export default function ResultsTable() {
       ) : (
         // A fixed viewport with its own scroll, so 80 rows do not push the trace
         // panel below the fold on a laptop or off the screen on a phone.
-        <div className="max-h-[30rem] overflow-y-auto overscroll-contain">
+        <div className="max-h-[30rem] overflow-x-hidden overflow-y-auto overscroll-contain">
           <table className="w-full table-fixed border-collapse text-sm">
             <caption className="sr-only">
               Every student with their class, GPA and letter grade. Select a row to see the
               full calculation.
             </caption>
+            {/* The name column takes whatever the other three do not. Those three
+                carry short, known-width content — a class label, a 4-character GPA
+                and a 2-character grade — so they are sized to their content rather
+                than to a guess, which matters because this table also renders in a
+                22rem column beside the trace. */}
             <colgroup>
               <col />
-              <col className="w-24" />
-              <col className="w-20" />
               <col className="w-16" />
+              <col className="w-14" />
+              <col className="w-12" />
             </colgroup>
             <thead>
               <tr className="sticky top-0 z-10 bg-ink-100 text-left text-xs uppercase tracking-wide text-ink-700 shadow-[0_1px_0_var(--color-ink-300)]">
-                <th scope="col" className="px-4 py-2 font-medium">
+                <th scope="col" className="px-3 py-1.5 font-medium">
                   Student
                 </th>
-                <th scope="col" className="px-2 py-2 font-medium">
+                <th scope="col" className="px-2 py-1.5 font-medium">
                   Class
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-medium">
+                <th scope="col" className="px-2 py-1.5 text-right font-medium">
                   GPA
                 </th>
-                <th scope="col" className="px-4 py-2 text-right font-medium">
+                <th scope="col" className="px-3 py-1.5 text-right font-medium">
                   Grade
                 </th>
               </tr>
@@ -226,16 +231,19 @@ export default function ResultsTable() {
                           select(r.id)
                         }}
                         className={[
-                          'flex w-full min-w-0 items-baseline gap-2 border-l-2 px-4 py-2 text-left',
+                          'flex w-full min-w-0 items-center gap-2 border-l-2 px-3 py-1 text-left',
                           failed ? 'border-l-danger' : 'border-l-transparent',
                         ].join(' ')}
                       >
-                        <span
-                          className={`truncate font-medium ${failed ? 'text-danger' : 'text-ink-900'}`}
-                        >
-                          {r.name}
+                        <span className="flex min-w-0 flex-col leading-tight">
+                          <span
+                            className={`truncate font-medium ${failed ? 'text-danger' : 'text-ink-900'}`}
+                            title={r.name}
+                          >
+                            {r.name}
+                          </span>
+                          <span className="font-mono text-[11px] text-ink-500">{r.id}</span>
                         </span>
-                        <span className="shrink-0 font-mono text-xs text-ink-500">{r.id}</span>
                         <span className="sr-only">
                           {failed
                             ? `, failed — GPA ${formatGpa(r.gpa)}, grade ${r.letter}`
@@ -243,15 +251,15 @@ export default function ResultsTable() {
                         </span>
                       </button>
                     </th>
-                    <td className="truncate px-2 py-2 text-ink-500">{r.class}</td>
+                    <td className="truncate px-2 py-1 text-xs text-ink-500" title={r.class}>{r.class}</td>
                     <td
-                      className={`px-2 py-2 text-right font-mono tabular-nums ${
+                      className={`px-2 py-1 text-right font-mono tabular-nums ${
                         failed ? 'font-medium text-danger' : 'text-ink-900'
                       }`}
                     >
                       {formatGpa(r.gpa)}
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="px-3 py-1 text-right">
                       <span
                         aria-hidden="true"
                         className={[

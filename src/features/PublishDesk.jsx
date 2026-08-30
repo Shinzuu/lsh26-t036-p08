@@ -166,7 +166,7 @@ export default function PublishDesk() {
       )}
 
       {total > 0 && (
-        <ul className="max-h-[calc(100dvh-28rem)] min-h-[12rem] divide-y divide-ink-300/60 overflow-y-auto px-1 py-1">
+        <ul className="max-h-[calc(100dvh-28rem)] min-h-[12rem] divide-y divide-ink-300/60 overflow-x-hidden overflow-y-auto px-1 py-1">
           {visible.map(({ student, why }) => {
             const isDone = verified.has(student.id)
             return (
