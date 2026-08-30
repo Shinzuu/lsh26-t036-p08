@@ -22,6 +22,7 @@ import CheckingLists from './features/CheckingLists.jsx'
 import PublishDesk from './features/PublishDesk.jsx'
 import ClassSummary from './features/ClassSummary.jsx'
 import MarksImport from './features/MarksImport.jsx'
+import Marksheet, { useSchoolName } from './features/Marksheet.jsx'
 import TracePanel from './features/TracePanel.jsx'
 
 const APP_NAME = 'Result Processor'
@@ -184,21 +185,45 @@ function LoadError() {
  */
 function TraceActions() {
   const { selected } = useSelected()
+  const [school, setSchool] = useSchoolName()
   if (!selected) return null
   return (
-    <div className="no-print flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card border border-ink-300 bg-white px-4 py-2.5">
-      <p className="text-sm text-ink-500">
-        Statement of result for{' '}
-        <span className="font-medium text-ink-900">{selected.name}</span>{' '}
-        <span className="font-mono text-xs">{selected.id}</span>
-      </p>
-      <button
-        type="button"
-        onClick={() => window.print()}
-        className="shrink-0 rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-900 hover:bg-ink-100"
-      >
-        Print marksheet
-      </button>
+    <div className="no-print rounded-card border border-ink-300 bg-white px-4 py-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <p className="text-sm text-ink-500">
+          Statement of marks for{' '}
+          <span className="font-medium text-ink-900">{selected.name}</span>{' '}
+          <span className="font-mono text-xs">{selected.id}</span>
+        </p>
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="shrink-0 rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-900 hover:bg-ink-100"
+        >
+          Print marksheet
+        </button>
+      </div>
+
+      {/*
+        The marks file has no school in it — the published fixtures carry a case
+        id and nothing else — so the office supplies it once and it is kept
+        locally. Left blank the sheet omits the line entirely rather than
+        printing a placeholder, which is what a school using its own letterhead
+        would want in any case.
+      */}
+      <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-ink-300 pt-2">
+        <label htmlFor="school-name" className="text-xs text-ink-500">
+          Name on the printed sheet
+        </label>
+        <input
+          id="school-name"
+          type="text"
+          value={school}
+          onChange={(e) => setSchool(e.target.value)}
+          placeholder="Your school's name — optional"
+          className="min-w-0 flex-1 rounded-lg border border-ink-300 px-2.5 py-1 text-sm text-ink-900 placeholder:text-ink-500"
+        />
+      </div>
     </div>
   )
 }
@@ -255,6 +280,7 @@ function Layout() {
   const empty = !dataset || dataset.students.length === 0
 
   return (
+    <>
     <div className="app-shell min-h-dvh lg:pl-64">
       <a
         href="#main"
@@ -322,6 +348,11 @@ function Layout() {
 
       <TracePanel />
     </div>
+
+    {/* Paper only. Sits outside the shell because printing hides the shell
+        entire — the interface is removed from the page rather than restyled. */}
+    <Marksheet />
+    </>
   )
 }
 
