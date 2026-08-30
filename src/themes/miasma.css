@@ -37,7 +37,7 @@
   --color-ink-50: #f7f6f6;   /* page background */
   --color-ink-100: #efeeee;  /* raised surface, table stripe */
   --color-ink-300: #ccc7c7;  /* quiet dividers and input outlines */
-  --color-ink-500: #736768;  /* secondary text — 5.03 on the page */
+  --color-ink-500: #695f60;  /* secondary text — 4.64 at worst, on the attention tint */
   --color-ink-700: #504848;  /* strong secondary text — 8.24 */
   --color-ink-900: #2e292a;  /* body text and headings — 13.27 */
 
