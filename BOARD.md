@@ -33,10 +33,10 @@ the per-unit prompts.
 
 | Unit | Item | Owner | Branch | Status | Last update (time + note) |
 |---|---|---|---|---|---|
-| U1 | R1 — dataset of ≥60 students, two classes, ≥8 hard edges, loadable from the fixture shape | — | `u1-dataset` | todo | — |
-| U2 | R2 — grade point per subject, GPA, letter grade | — | `u2-grading-engine` | todo | — |
-| U3 | R3 — per-student trace: mark, grade point, and the rule that decided it | — | `u3-trace` | todo | — |
-| U4 | R4 — checking lists: optional rule, practical fail, absent | — | `u4-checking-lists` | todo | — |
+| U1 | R1 — dataset of ≥60 students, two classes, ≥8 hard edges, loadable from the fixture shape | shinzuu | `u1-dataset` | todo | — |
+| U2 | R2 — grade point per subject, GPA, letter grade | Rimjhim | `u2-grading-engine` | todo | — |
+| U3 | R3 — per-student trace: mark, grade point, and the rule that decided it | Robiul | `u3-trace` | todo | — |
+| U4 | R4 — checking lists: optional rule, practical fail, absent | Dip | `u4-checking-lists` | todo | — |
 
 Status values: `todo` → `building` → `pushed` → **`done-live`**. A row only earns
 `done-live` when its note names the exact live-URL check performed — e.g. "verified live:
