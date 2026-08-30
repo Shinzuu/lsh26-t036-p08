@@ -60,12 +60,26 @@ function Layout() {
         </ul>
       </nav>
 
-      <header className="mx-auto w-full max-w-6xl px-4 pt-8 pb-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-accent">
-          LSH26-T036 · Problem P08
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">{APP_NAME}</h1>
-        <p className="mt-1 text-ink-500">{TAGLINE}</p>
+      {/* A document masthead rather than a product hero: this is a tabulation
+          sheet, and the thing that identifies a sheet is who it belongs to and
+          what it is for. The double rule beneath is the ledger's own. */}
+      <header className="masthead mx-auto mb-6 w-full max-w-6xl px-4 pt-10 pb-4">
+        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+          <div>
+            <h1 className="text-4xl font-semibold tracking-tight text-ink-900">{APP_NAME}</h1>
+            <p className="mt-1.5 max-w-xl text-ink-500">{TAGLINE}</p>
+          </div>
+          <dl className="flex shrink-0 items-end gap-6 text-sm">
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-ink-500">Team</dt>
+              <dd className="font-medium text-ink-900">Miasma · LSH26-T036</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-ink-500">Problem</dt>
+              <dd className="font-medium text-accent">P08</dd>
+            </div>
+          </dl>
+        </div>
       </header>
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-16">

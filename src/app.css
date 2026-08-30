@@ -48,3 +48,58 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+/* ---------------------------------------------------------------------------
+   The register.
+
+   This app is a tabulation sheet — the ruled ledger a school's exam office
+   works a result out in, and writes its working in the margin of. Four
+   identically-rounded cards read like a dashboard, which is the wrong object.
+   The rules below make it read like a document: hairline rules instead of
+   boxes, a ruled masthead, and one panel — the trace, which is the whole
+   argument of the build — marked the way a teacher marks the page they are
+   checking.
+
+   Every colour used here is a token from miasma.css, so the contrast audit
+   still holds.
+   --------------------------------------------------------------------------- */
+
+/* Figures line up down the page the way they do in a ruled register. */
+body {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Masthead: a document header, not a hero. The double rule is the ledger's. */
+.masthead {
+  border-bottom: 3px double var(--color-rule);
+}
+
+.masthead h1 {
+  letter-spacing: -0.02em;
+}
+
+/* Panels stop being floating cards and become ruled sections of one sheet.
+   A square top-left corner and a hairline top rule read as a sheet division;
+   the soft radius everywhere read as a dashboard widget. */
+.rounded-card {
+  border-radius: 0.25rem;
+}
+
+section[aria-labelledby] {
+  border-top: 2px solid var(--color-ink-300);
+}
+
+/* The signature element. The trace is the part that answers the problem's real
+   demand, so it is the one thing on the page carrying the accent edge — the
+   margin mark on the page being checked. Everything else stays quiet. */
+section[aria-labelledby='trace-heading'] {
+  border-top: 2px solid var(--color-accent);
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(46 41 42 / 0.06), 0 8px 24px -12px rgb(46 41 42 / 0.18);
+}
+
+/* Column headers read as a register's ruled headings, not table chrome. */
+thead th {
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
