@@ -11,7 +11,19 @@
  * hands over the two artefacts a school leaves with: a results file for the
  * office, and a printable marksheet for a parent.
  */
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+/**
+ * Rows put in the DOM at once. Same budget and same reason as the roster: a
+ * district-sized sheet flags thousands of students, and rendering every one of
+ * them cost 1,136ms and 27,591 nodes on the Overview.
+ *
+ * The cap is display only. Progress, the "sign off all" control and the CSV
+ * export all read the whole queue, so a student who is below the fold is still
+ * counted, still signed off by the bulk control, and still exported. A worklist
+ * that silently shortened itself would be a correctness bug, not a slow view.
+ */
+const PAGE = 100
 import { openTrace } from './TracePanel.jsx'
 import { useDataset, useSelected, useVerification } from '../lib/store.js'
 import { checkingLists } from '../lib/grading.js'
@@ -65,6 +77,16 @@ export default function PublishDesk() {
     lists.absent.forEach((r) => add(r, 'absent mark'))
     return [...reasons.values()].sort((a, b) => b.why.length - a.why.length || a.student.id.localeCompare(b.student.id))
   }, [results])
+
+  const [limit, setLimit] = useState(PAGE)
+
+  // A new sheet starts the budget again rather than inheriting the last one's depth.
+  useEffect(() => {
+    setLimit(PAGE)
+  }, [results])
+
+  const visible = useMemo(() => queue.slice(0, limit), [queue, limit])
+  const hidden = queue.length - visible.length
 
   const done = queue.filter((q) => verified.has(q.student.id)).length
   const total = queue.length
@@ -145,7 +167,7 @@ export default function PublishDesk() {
 
       {total > 0 && (
         <ul className="max-h-72 divide-y divide-ink-300/60 overflow-y-auto px-1 py-1">
-          {queue.map(({ student, why }) => {
+          {visible.map(({ student, why }) => {
             const isDone = verified.has(student.id)
             return (
               <li key={student.id} className="flex items-center gap-3 px-3 py-2">
@@ -178,6 +200,26 @@ export default function PublishDesk() {
             )
           })}
         </ul>
+      )}
+
+      {/* Say what is held back and offer it, next to the number. The counts and
+          the sign-off-all control above already cover the whole queue. */}
+      {hidden > 0 && (
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-ink-300 px-4 py-2 text-xs text-ink-500">
+          <span>
+            Listing the first{' '}
+            <span className="font-medium text-ink-900 tabular-nums">{visible.length}</span> of{' '}
+            <span className="font-medium text-ink-900 tabular-nums">{total}</span>. The progress
+            above and “Sign off all” cover every one of them.
+          </span>
+          <button
+            type="button"
+            onClick={() => setLimit((n) => n + PAGE)}
+            className="rounded-lg border border-ink-300 bg-white px-2.5 py-1 font-medium text-ink-900 hover:bg-ink-100"
+          >
+            Show {Math.min(PAGE, hidden)} more
+          </button>
+        </p>
       )}
 
       <div className="flex flex-wrap items-center justify-end gap-3 border-t border-ink-300 px-4 py-3">

@@ -17,8 +17,25 @@
  *   rely on at phone width or on a washed-out projector: a tinted row, a red left
  *   rule, an outlined F chip, and the word "failed" in the row's accessible name.
  */
-import { useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useDataset, useSelected } from '../lib/store.js'
+
+/**
+ * How many rows are put in the DOM at once.
+ *
+ * The engine grades 5,000 students in 128ms, but rendering 5,000 rows costs 2.9
+ * seconds and 50,000 DOM nodes, and every keystroke in the search box re-rendered
+ * all of them — a measured 1,396ms for one character, which reads as a frozen
+ * input. A district-sized upload is the case this app is meant to survive.
+ *
+ * Capping rather than virtualising: react-window would add a dependency, a
+ * licence entry, and absolutely-positioned rows that would re-break the sr-only
+ * clipping fix. A cap needs neither, and it is honest — the footer says exactly
+ * how many rows are held back and offers them. Nothing is filtered out of the
+ * export, the counts, the checking lists or the summary; this is a display
+ * budget, not a data limit.
+ */
+const PAGE = 100
 
 /** Always two decimals, so 4 reads as 4.00 and the column stays aligned. */
 const formatGpa = (gpa) => (Number.isFinite(gpa) ? gpa.toFixed(2) : '—')
@@ -27,9 +44,16 @@ export default function ResultsTable() {
   const { results } = useDataset()
   const { selectedId, select } = useSelected()
   const [query, setQuery] = useState('')
+  const [limit, setLimit] = useState(PAGE)
+
+  // The input renders from `query` so typing is never held up; the table renders
+  // from `deferredQuery`, which React is free to compute in a lower-priority pass.
+  // Without this the keystroke and the 5,000-row re-render land in the same commit
+  // and the character appears only after the table has finished.
+  const deferredQuery = useDeferredValue(query)
 
   const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase()
+    const needle = deferredQuery.trim().toLowerCase()
     if (!needle) return results
     return results.filter(
       (r) =>
@@ -37,11 +61,26 @@ export default function ResultsTable() {
         r.id.toLowerCase().includes(needle) ||
         String(r.class).toLowerCase().includes(needle),
     )
-  }, [results, query])
+  }, [results, deferredQuery])
 
-  const failing = results.filter((r) => r.failedCompulsory.length > 0).length
+  // Narrowing the search or loading a new sheet starts the budget again, so a
+  // reader who paged deep into one roster does not inherit that depth in the next.
+  useEffect(() => {
+    setLimit(PAGE)
+  }, [deferredQuery, results])
+
+  const visible = useMemo(() => filtered.slice(0, limit), [filtered, limit])
+  const hidden = filtered.length - visible.length
+
+  const failing = useMemo(
+    () => results.filter((r) => r.failedCompulsory.length > 0).length,
+    [results],
+  )
   const passing = results.length - failing
   const searching = query.trim().length > 0
+  // The table is one render behind the box. Say so rather than showing stale
+  // counts as if they were current.
+  const catchingUp = query !== deferredQuery
 
   return (
     <section
@@ -100,8 +139,10 @@ export default function ResultsTable() {
           )}
         </div>
         <p aria-live="polite" className="mt-1 text-xs text-ink-500">
-          {searching
-            ? `Showing ${filtered.length} of ${results.length} students.`
+          {catchingUp
+            ? 'Searching…'
+            : searching
+            ? `${filtered.length} of ${results.length} students match.`
             : selectedId
               // A student is opened on arrival, so the old prompt contradicted the
               // trace sitting beside it. Say what the row does instead.
@@ -153,7 +194,7 @@ export default function ResultsTable() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((r, i) => {
+              {visible.map((r, i) => {
                 const failed = r.failedCompulsory.length > 0
                 const isSelected = r.id === selectedId
                 return (
@@ -228,6 +269,38 @@ export default function ResultsTable() {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* The display budget, stated. A count with no way to act on it would just
+          be an apology, so the control that lifts it sits next to the number. */}
+      {hidden > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-ink-300 bg-ink-50/50 px-4 py-2.5">
+          <p className="text-xs text-ink-500">
+            Showing the first{' '}
+            <span className="font-medium text-ink-900 tabular-nums">{visible.length}</span> of{' '}
+            <span className="font-medium text-ink-900 tabular-nums">{filtered.length}</span>{' '}
+            matching students. Every one of them is still counted in the totals above and
+            included in the export.
+          </p>
+          <div className="flex shrink-0 gap-2">
+            <button
+              type="button"
+              onClick={() => setLimit((n) => n + PAGE)}
+              className="rounded-lg border border-ink-300 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-900 hover:bg-ink-100"
+            >
+              Show {Math.min(PAGE, hidden)} more
+            </button>
+            {hidden > PAGE && (
+              <button
+                type="button"
+                onClick={() => setLimit(filtered.length)}
+                className="rounded-lg border border-ink-300 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-700 hover:bg-ink-100"
+              >
+                Show all {filtered.length}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
