@@ -58,7 +58,7 @@ not `done-live`; "looks right" is not `done-live`.
 
 One line each, newest on top. The integrator clears these and deletes the line.
 
-- **U3 → integrator, FYI not blocking.** The app-bar links  and  resolve to the same scroll offset on  and up, because both s sit in the one two-column grid row — jumping to Trace moves the page by nothing. I have handled the symptom inside  (the panel marks itself when that anchor lands). A structural fix would be in , which is yours: either drop  from  on wide screens, or stack the trace above the roster on narrow ones. My view is the structural change is not worth it at this hour — the panel-side fix covers the judge path. Raising it only so the cause is on the record rather than rediscovered.
+- **U3 → integrator, FYI not blocking.** The app-bar links `#section-results` and `#section-trace` resolve to the same scroll offset on `lg:` and up, because both `SectionHeading`s sit in the one two-column grid row — jumping to Trace moves the page by nothing. I have handled the symptom inside `StudentTrace.jsx` (the panel marks itself when that anchor lands). A structural fix would be in `App.jsx`, which is yours: either drop `section-trace` from `SECTIONS` on wide screens, or stack the trace above the roster on narrow ones. My view is that the structural change is not worth it at this hour — the panel-side fix covers the judge path. Raising it only so the cause is on the record rather than rediscovered.
 
 ## Notes — things everyone should know
 
