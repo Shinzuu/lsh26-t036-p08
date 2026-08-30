@@ -149,12 +149,17 @@ export default function ResultsTable() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((r) => {
+              {filtered.map((r, i) => {
                 const failed = r.failedCompulsory.length > 0
                 const isSelected = r.id === selectedId
                 return (
                   <tr
-                    key={r.id}
+                    // Position is part of the key because a pasted case may repeat a
+                    // student id. With `key={r.id}` alone, two rows share a key, and
+                    // React's reconciler then keeps one of them mounted forever — it
+                    // survived five later datasets in testing, leaving a student on
+                    // screen who was not in the loaded case at all (T1-01).
+                    key={`${r.id}-${i}`}
                     onClick={() => select(r.id)}
                     aria-selected={isSelected}
                     className={[
