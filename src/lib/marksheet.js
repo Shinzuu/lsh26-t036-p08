@@ -26,6 +26,8 @@
  * space-insensitively, so `Student ID`, `student_id` and `id` are all the id.
  */
 
+import { markProblem } from './dataset.js'
+
 const ALIASES = {
   id: ['id', 'studentid', 'student', 'roll', 'rollno', 'rollnumber'],
   name: ['name', 'studentname', 'fullname'],
@@ -170,6 +172,19 @@ export function parseMarksSheet(text, dataset) {
       const n = num(cell)
       if (n === null) { bad = `${code}: “${cell}” is not a number or AB`; break }
       marks[code] = n
+    }
+
+    // The same range rule the JSON loader applies. This path never reaches
+    // `parseDataset` — the importer builds students and hands them to the store —
+    // so a sheet with `840` typed for `84`, or `900+500`, was accepted here and
+    // graded A+ while the identical case pasted as JSON was refused. A marks
+    // sheet is where a typo actually happens, so this is the path that most
+    // needed the check.
+    if (!bad) {
+      for (const [code, mark] of Object.entries(marks)) {
+        const problem = markProblem(mark)
+        if (problem) { bad = `${code}: ${problem}`; break }
+      }
     }
 
     if (bad) { reject(bad); continue }

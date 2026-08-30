@@ -15,6 +15,7 @@ import {
   parseDataset,
   THEORY_TOTAL,
   PRACTICAL_TOTAL,
+  COMPULSORY_COUNT,
 } from './dataset.js'
 import {
   THEORY_TOTAL as ENGINE_THEORY_TOTAL,
@@ -113,4 +114,39 @@ test('zero and AB are still accepted', () => {
     { ...data.students[0], marks: { ...data.students[0].marks, BAN: 0, ENG: 'AB', PHY: { theory: 0, practical: 0 } } },
   ]
   assert.equal(refusal(data), null)
+})
+
+test('a case with the wrong number of compulsory subjects is refused', () => {
+  // The engine divides by the constant six, not by however many subjects a case
+  // lists, so the count is part of the rule rather than a property of the data.
+  // Seven subjects each at grade point 3.0 summed to 21 and divided by 6 reported
+  // GPA 3.67 and grade A- where the honest average is 3.00 and grade B.
+  const data = clone()
+  data.compulsory = ['BAN', 'ENG', 'MAT', 'PHY', 'CHE', 'BIO', 'HMT']
+  assert.match(refusal(data) ?? '', /divisor is fixed at 6/)
+
+  const short = clone()
+  short.compulsory = ['BAN', 'ENG', 'MAT', 'PHY', 'CHE']
+  assert.match(refusal(short) ?? '', /lists 5 subjects/)
+})
+
+test('the seed lists exactly the required number of compulsory subjects', () => {
+  assert.equal(SEED.compulsory.length, COMPULSORY_COUNT)
+})
+
+test('a repeated compulsory subject is refused', () => {
+  // Six entries, so the count check passes, but BAN is summed twice and BIO is
+  // never graded: GPA 2.33 and grade C for a student whose six distinct subjects
+  // average 1.67 and grade D.
+  const data = clone()
+  data.compulsory = ['BAN', 'BAN', 'ENG', 'MAT', 'PHY', 'CHE']
+  assert.match(refusal(data) ?? '', /lists "BAN" twice/)
+})
+
+test('a repeated subject code is refused', () => {
+  // Marks are keyed by code, so a second entry silently decides whether the
+  // subject carries a practical part — which drives the part-pass checks.
+  const data = clone()
+  data.subjects = [...data.subjects, { code: 'BAN', name: 'Bangla Again', practical: true }]
+  assert.match(refusal(data) ?? '', /lists "BAN" more than once/)
 })

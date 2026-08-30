@@ -21,7 +21,7 @@
  * recomputed here beyond arranging it: a marksheet that disagreed with the trace
  * beside it would be worse than no marksheet.
  */
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { letterGrade } from '../lib/grading.js'
 import { useDataset, useSelected } from '../lib/store.js'
 
@@ -35,25 +35,57 @@ import { useDataset, useSelected } from '../lib/store.js'
  * school printing onto its own letterhead would want anyway.
  */
 const SCHOOL_KEY = 'p08.school.v1'
+const SCHOOL_EVENT = 'p08:school-name'
+
+/**
+ * One value, read in two places, so it cannot be `useState` per caller.
+ *
+ * It was, and the sheet printed without the school on it. The field lives on the
+ * trace view and the sheet renders somewhere else entirely, so each held its own
+ * copy of the hook's state: typing a name updated the field and localStorage
+ * while the marksheet's copy stayed on the value it had read at mount. The name
+ * only appeared after a reload — which nobody does between typing it and
+ * pressing print.
+ *
+ * `useSyncExternalStore` is the fix rather than lifting it into `src/lib/store.js`:
+ * localStorage genuinely is an external store, every subscriber re-reads the one
+ * source on change, and the shared application state stays what it was — which
+ * case is loaded and who is selected, nothing about how a sheet is decorated.
+ */
+
+// Used only where localStorage is unavailable — private browsing, or a blocked
+// origin. The name still applies for the session; only the remembering is lost.
+let inMemory = ''
+
+function readSchoolName() {
+  try {
+    return localStorage.getItem(SCHOOL_KEY) ?? inMemory
+  } catch {
+    return inMemory
+  }
+}
+
+function subscribeToSchoolName(onChange) {
+  window.addEventListener(SCHOOL_EVENT, onChange)
+  // Another tab of the same office editing the same value.
+  window.addEventListener('storage', onChange)
+  return () => {
+    window.removeEventListener(SCHOOL_EVENT, onChange)
+    window.removeEventListener('storage', onChange)
+  }
+}
 
 export function useSchoolName() {
-  const [name, setName] = useState('')
-
-  useEffect(() => {
-    try {
-      setName(localStorage.getItem(SCHOOL_KEY) ?? '')
-    } catch {
-      /* storage unavailable — the sheet just prints without the line */
-    }
-  }, [])
+  const name = useSyncExternalStore(subscribeToSchoolName, readSchoolName, () => '')
 
   const save = (next) => {
-    setName(next)
+    inMemory = next
     try {
       localStorage.setItem(SCHOOL_KEY, next)
     } catch {
-      /* nothing to do; the name still applies for this session */
+      /* not persisted; `inMemory` still serves every reader this session */
     }
+    window.dispatchEvent(new CustomEvent(SCHOOL_EVENT))
   }
 
   return [name, save]

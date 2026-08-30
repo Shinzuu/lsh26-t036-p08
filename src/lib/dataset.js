@@ -34,6 +34,9 @@ export const SUBJECT_FAIL_MARK = 33
 // so `dataset.test.mjs` asserts they do.
 export const THEORY_TOTAL = 75
 export const PRACTICAL_TOTAL = 25
+
+/** R-13: six compulsory subjects, and the GPA divisor is fixed at six. */
+export const COMPULSORY_COUNT = 6
 /** Below this, the optional subject's grade point is 2.0 or less, so it adds nothing. */
 export const OPTIONAL_HELPS_FROM_MARK = 50
 
@@ -68,10 +71,18 @@ function marksFail(mark) {
  * and both scored grade point 5.0, turning a typed 840 into an A+ instead of an
  * error. Across all 25 published cases single marks run 0–100, theory 6–75 and
  * practical 1–25, so every case a judge can load passes these bounds untouched.
+ *
+ * Exported because the marks-sheet importer applies the same rule per row. It
+ * bypasses `parseDataset` entirely — it builds students and hands them straight
+ * to the store — so without sharing this the spreadsheet path, which is the one a
+ * school actually types into, would keep accepting the typo the JSON path had
+ * just started refusing.
+ *
+ * @returns {string|null} what is wrong with the mark, or null if it is legal.
  */
 const MAX_SINGLE_MARK = THEORY_TOTAL + PRACTICAL_TOTAL
 
-function markProblem(mark) {
+export function markProblem(mark) {
   if (mark === 'AB') return null
 
   if (typeof mark === 'number') {
@@ -132,9 +143,41 @@ export function parseDataset(input) {
   if (!Array.isArray(data.compulsory) || data.compulsory.length === 0) {
     throw new Error('Missing `compulsory` — expected a list of subject codes.')
   }
-  const codes = new Set(data.subjects.map((s) => s.code))
+  // R-13 fixes the divisor at six, and the engine divides by the constant rather
+  // than by however many subjects a case happens to list. So the count is part of
+  // the rule, not a property of the data, and a case that disagrees produces a
+  // number that is not the average of anything: seven compulsory subjects each at
+  // grade point 3.0 summed to 21 and divided by 6 reported GPA 3.67 and grade A-,
+  // where the honest average is 3.00 and grade B — a whole band out, with the
+  // trace still captioned "Six compulsory grade points" above a list of seven.
+  // Every one of the 25 published cases lists exactly six.
+  if (data.compulsory.length !== COMPULSORY_COUNT) {
+    throw new Error(
+      `\`compulsory\` lists ${data.compulsory.length} subjects, but a GPA is always six compulsory subjects plus one optional — the divisor is fixed at ${COMPULSORY_COUNT}, so a case with a different count cannot be graded.`,
+    )
+  }
+  // A repeated subject code makes `subjects` ambiguous: marks are keyed by code,
+  // so the second entry silently decides whether the subject carries a practical
+  // part, which is what determines the theory/practical pass checks.
+  const codes = new Set()
+  for (const s of data.subjects) {
+    if (codes.has(s.code)) {
+      throw new Error(`\`subjects\` lists "${s.code}" more than once. Each subject code appears once.`)
+    }
+    codes.add(s.code)
+  }
+  // Uniqueness matters more than it looks. `compulsoryPoints` sums across this
+  // list, so a repeat is counted twice and whichever subject it displaced is
+  // never graded at all — and the length check above still passes.
+  // `['BAN','BAN','ENG','MAT','PHY','CHE']` reported GPA 2.33 and grade C for a
+  // student whose six distinct subjects average 1.67 and grade D.
+  const seenCompulsory = new Set()
   for (const c of data.compulsory) {
     if (!codes.has(c)) throw new Error(`\`compulsory\` names "${c}", which is not in \`subjects\`.`)
+    if (seenCompulsory.has(c)) {
+      throw new Error(`\`compulsory\` lists "${c}" twice. The six compulsory subjects must be six different subjects.`)
+    }
+    seenCompulsory.add(c)
   }
 
   if (!Array.isArray(data.students) || data.students.length === 0) {
