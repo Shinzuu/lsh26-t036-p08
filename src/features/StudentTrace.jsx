@@ -25,7 +25,7 @@
  *    row that says so, rather than a row that silently is not there. "Show every
  *    subject" is the item; a table that quietly drops one fails it invisibly.
  */
-import { useId } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { PRACTICAL_PASS, THEORY_PASS } from '../lib/grading.js'
 import { useDataset, useSelected } from '../lib/store.js'
 
@@ -112,6 +112,91 @@ export default function StudentTrace() {
   const { dataset } = useDataset()
   const { selected } = useSelected()
 
+  const panelRef = useRef(null)
+  const previousId = useRef(null)
+  const [justChanged, setJustChanged] = useState(false)
+  const selectedId = selected?.id ?? null
+
+  /**
+   * Bring the trace to the reader when they pick a different student.
+   *
+   * Clicking a roster row only changes the selection; on a phone the trace sits
+   * below eighty rows of table, and even on a wide screen it is in the other
+   * column, so the click reads as having done nothing. `CheckingLists` and
+   * `PublishDesk` solve this by opening the trace drawer, but the roster sits
+   * directly beside this panel on a wide screen, where a modal over a panel you
+   * can already see would be worse than the problem. So this panel answers for
+   * itself: it scrolls into view only when it is genuinely off screen, and marks
+   * itself briefly either way so the eye is told where the change landed.
+   *
+   * Only a reader-driven change counts. `previousId` starts null and is reset to
+   * null whenever the store clears the selection, so neither the illustrative
+   * student opened on arrival nor the auto-open after loading a new case can
+   * yank the page away from the header the reader is actually looking at — both
+   * of those are a null-to-something transition, and only something-to-something
+   * moves the page.
+   */
+  useEffect(() => {
+    const previous = previousId.current
+    previousId.current = selectedId
+    if (selectedId === null || previous === null || previous === selectedId) return
+
+    const el = panelRef.current
+    // Inside the trace drawer this component is already the thing in front of the
+    // reader, and the drawer owns its own focus and scrolling.
+    if (!el || el.closest('[role="dialog"]')) return
+
+    const rect = el.getBoundingClientRect()
+    const viewport = window.innerHeight || document.documentElement.clientHeight
+    // On screen means a usable amount of the panel is visible, not that one pixel
+    // of its edge is. A tall trace scrolled past the top still counts.
+    const onScreen = rect.top < viewport - 80 && rect.bottom > 80
+    if (!onScreen) {
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+      el.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' })
+    }
+
+    setJustChanged(true)
+    const timer = setTimeout(() => setJustChanged(false), 1100)
+    return () => clearTimeout(timer)
+  }, [selectedId])
+
+  /**
+   * The other half of the same complaint: the app bar's "Trace" link.
+   *
+   * On a wide screen the results and trace headings sit side by side in one grid
+   * row, at the same scroll offset — so jumping to the trace anchor scrolls the
+   * page by nothing at all and the link reads as broken. The anchor is doing its
+   * job; there is simply nowhere to go. Marking the panel is what turns "nothing
+   * happened" into "that is the thing you asked for".
+   *
+   * The anchor id belongs to `App.jsx`, which is not mine to change, so this
+   * matches on it by name. If it is ever renamed the mark quietly stops — the
+   * link still works, so the failure is invisible rather than broken.
+   */
+  useEffect(() => {
+    let timer
+
+    // The drawer check has to happen per event, not once at subscribe time: on the
+    // very first render `selected` can still be null, the empty state does not
+    // carry the ref, and an effect with no dependencies would then never see the
+    // panel appear.
+    function onHashChange() {
+      if (window.location.hash !== '#section-trace') return
+      const el = panelRef.current
+      if (!el || el.closest('[role="dialog"]')) return
+      setJustChanged(true)
+      window.clearTimeout(timer)
+      timer = window.setTimeout(() => setJustChanged(false), 1100)
+    }
+
+    window.addEventListener('hashchange', onHashChange)
+    return () => {
+      window.removeEventListener('hashchange', onHashChange)
+      window.clearTimeout(timer)
+    }
+  }, [])
+
   if (!selected) return <Empty />
 
   const subjectMeta = new Map((dataset?.subjects ?? []).map((s) => [s.code, s]))
@@ -135,8 +220,13 @@ export default function StudentTrace() {
 
   return (
     <section
+      ref={panelRef}
       aria-labelledby={headingId}
-      className="trace-card rounded-card border border-ink-300 bg-ink-50/60 p-4"
+      // scroll-mt-24 keeps the heading clear of the sticky app bar when this panel
+      // scrolls itself into view.
+      className={`trace-card scroll-mt-24 rounded-card border bg-ink-50/60 p-4 transition-shadow duration-300 ${
+        justChanged ? 'border-accent ring-2 ring-accent/40' : 'border-ink-300'
+      }`}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
         <div>
