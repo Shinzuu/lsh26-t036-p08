@@ -42,3 +42,10 @@ One line each, newest on top. Chat evaporates; this file syncs.
 - U2: `gpa` is a number, so `4` needs `.toFixed(2)` to read as `4.00`. The roster
   and the trace both have to format it; the engine deliberately does not return a
   pre-formatted string.
+
+- UI/UX, phone: at 360 px the roster table fits (311 px, no scroll), but the trace
+  table is 544 px inside a 294 px container, so the "Rule that decided it" column —
+  the whole point of required item 3 — sits off-screen until you swipe the table
+  sideways. Page-level horizontal scroll is still zero, and the container does scroll,
+  so nothing is unreachable. Logged for the polish round rather than changed: it is a
+  layout change in U3's file and the desktop capture is what gets judged at 22:00.
