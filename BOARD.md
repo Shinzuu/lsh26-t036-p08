@@ -35,7 +35,7 @@ the per-unit prompts.
 |---|---|---|---|---|---|
 | U1 | R1 — dataset of ≥60 students, two classes, ≥8 hard edges, loadable from the fixture shape | shinzuu | `u1-dataset` | done-live | 18:40 — verified live: page opens with 80 students across Class 9 (40) and Class 10 (40) with no upload, all four hard-edge lines naming real students; uploading fixture case PUB-02 switched the header to PUB-02, 60 students, Class 9 (30) and Class 10 (30), and every edge line recomputed to different students and counts. |
 | U2 | R2 — grade point per subject, GPA, letter grade | Rimjhim | `u2-grading-engine` | done-live | 19:05 — merged and deployed. Verified live: Results panel lists all 80 students with GPA to 2dp and letter, 59 passing / 21 failing; S004 reads 0.00 F with subject points 5.0/5.0/0.0/5.0/5.0/5.0 still visible. 26/26 node --test pass, and an independently written implementation of the clarifications matched all 80 students on GPA, letter, uncancelled average and all three checking lists — 0 mismatches. |
-| U3 | R3 — per-student trace: mark, grade point, and the rule that decided it | Robiul | `u3-trace` | done-live | 19:05 — merged and deployed. Verified live: opened Imran Sultana (S004), trace lists all 7 subjects with mark used, grade point and rule text; banner names Mathematics as the cause and shows the uncancelled 4.67 beside the final 0.00. Opened Hasib Khatun (S045): Biology renders AB with rule 'absent — AB, grade point 0', not 0. |
+| U3 | R3 — per-student trace: mark, grade point, and the rule that decided it | Robiul | `u3-trace-visibility` | pushed | 21:48 — branch `u3-trace-visibility` (2 commits, StudentTrace.jsx only): clicking a roster row changed the selection silently, so the trace read as doing nothing. The panel now scrolls itself into view only when genuinely off screen, and marks its border briefly either way; the app-bar Trace link marks it too, since on a wide screen that anchor scrolls by nothing. Reader-driven changes only — the illustrative student on arrival and the auto-open after a case load are ignored. No-op inside the drawer. npm run build and preflight pass; SSR render unchanged. Needs a real click on the live URL after your deploy before it is done-live. |
 | U4 | R4 — checking lists: optional rule, practical fail, absent | Dip | `u4-checking-lists` | done-live | 19:05 — merged and deployed. Verified live: three lists with counts 25 / 10 / 2, each stating its rule; header reports 10 students on more than one list; Lamia Islam appears under the optional rule badged 'also on Practical fail'. NOTE: the branch was pushed with the board row left at todo — merged on the operator's instruction. |
 
 Status values: `todo` → `building` → `pushed` → **`done-live`**. A row only earns
@@ -58,7 +58,7 @@ not `done-live`; "looks right" is not `done-live`.
 
 One line each, newest on top. The integrator clears these and deletes the line.
 
-- (none)
+- **U3 → integrator, FYI not blocking.** The app-bar links  and  resolve to the same scroll offset on  and up, because both s sit in the one two-column grid row — jumping to Trace moves the page by nothing. I have handled the symptom inside  (the panel marks itself when that anchor lands). A structural fix would be in , which is yours: either drop  from  on wide screens, or stack the trace above the roster on narrow ones. My view is the structural change is not worth it at this hour — the panel-side fix covers the judge path. Raising it only so the cause is on the record rather than rediscovered.
 
 ## Notes — things everyone should know
 
