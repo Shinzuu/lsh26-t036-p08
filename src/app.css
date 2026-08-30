@@ -75,7 +75,34 @@ body {
 }
 
 .masthead h1 {
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+}
+
+/* Anchor navigation must not drop a heading behind the sticky bar. */
+[id^='section-'] {
+  scroll-margin-top: 4.5rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Links inside the shell are navigation, not prose — no underline by default. */
+.app-bar a,
+a.no-underline {
+  text-decoration: none;
+}
+
+/* Touch targets on a phone. Judges open this on a handset. */
+@media (max-width: 640px) {
+  .app-bar a,
+  button {
+    min-height: 2.25rem;
+  }
 }
 
 /* Panels stop being floating cards and become ruled sections of one sheet.
