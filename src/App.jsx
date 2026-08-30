@@ -38,6 +38,28 @@ function Layout() {
 
   return (
     <>
+      {/* Skip links. Every roster row is a button, so a keyboard user would otherwise
+          pass ~100 controls to reach the panels below the table. Hidden until focused,
+          so they cost a mouse user nothing. */}
+      <nav aria-label="Skip to a section" className="mx-auto w-full max-w-6xl px-4">
+        <ul className="flex flex-wrap gap-2">
+          {[
+            ['#panel-results', 'Skip to results'],
+            ['#panel-trace', 'Skip to the trace'],
+            ['#panel-checking', 'Skip to the checking list'],
+          ].map(([href, label]) => (
+            <li key={href}>
+              <a
+                href={href}
+                className="sr-only focus:not-sr-only focus:inline-block focus:rounded-lg focus:bg-accent focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-white"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       <header className="mx-auto w-full max-w-6xl px-4 pt-8 pb-4">
         <p className="text-xs font-medium uppercase tracking-wide text-accent">
           LSH26-T036 · Problem P08
@@ -58,18 +80,18 @@ function Layout() {
         ) : (
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
             {/* Item 2 — every student's grade points, GPA and letter. */}
-            <div className="min-w-0">
+            <div id="panel-results" tabIndex={-1} className="min-w-0">
               <ResultsTable />
             </div>
             {/* Item 3 — the trace for whichever student is selected. */}
-            <div className="min-w-0">
+            <div id="panel-trace" tabIndex={-1} className="min-w-0">
               <StudentTrace />
             </div>
           </div>
         )}
 
         {/* Item 4 — the office's checking list, full width beneath the pair. */}
-        <div className="mt-6">
+        <div id="panel-checking" tabIndex={-1} className="mt-6">
           <CheckingLists />
         </div>
 
