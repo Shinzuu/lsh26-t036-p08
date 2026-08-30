@@ -194,20 +194,26 @@ export default function Marksheet() {
         </tfoot>
       </table>
 
-      <table className="ms-result">
-        <tbody>
-          <tr>
-            <th scope="row">GPA</th>
-            <td className="ms-big">{selected.gpa.toFixed(2)}</td>
-            <th scope="row">Letter grade</th>
-            <td className="ms-big">{selected.letter}</td>
-            <th scope="row">Result</th>
-            <td className={`ms-big ${passed ? 'ms-pass' : 'ms-fail'}`}>
-              {passed ? 'PASSED' : 'FAILED'}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {/*
+        Label above value rather than beside it. Side by side, "Letter grade" is
+        a long label next to a one-character value, and in a fixed three-column
+        strip the label overran its cell and the grade printed on top of it.
+        Stacked, the three read as equal conclusions and no wording can collide.
+      */}
+      <div className="ms-result">
+        <div className="ms-result-cell">
+          <p className="ms-result-label">GPA</p>
+          <p className="ms-result-value">{selected.gpa.toFixed(2)}</p>
+        </div>
+        <div className="ms-result-cell">
+          <p className="ms-result-label">Letter grade</p>
+          <p className="ms-result-value">{selected.letter}</p>
+        </div>
+        <div className="ms-result-cell">
+          <p className="ms-result-label">Result</p>
+          <p className="ms-result-value">{passed ? 'PASSED' : 'FAILED'}</p>
+        </div>
+      </div>
 
       {/*
         The one remark a marksheet must carry. A GPA of 0.00 next to five good

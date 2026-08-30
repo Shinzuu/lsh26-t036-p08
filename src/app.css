@@ -332,46 +332,36 @@ thead th {
     text-transform: uppercase;
   }
 
-  /* The result line, boxed so it reads as the conclusion rather than one more row. */
+  /* The result strip: three equal boxes, each a label over its value. */
   .ms-result {
-    width: 100%;
+    display: flex;
     margin-top: 0.7rem;
-    border-collapse: collapse;
-    table-layout: fixed;
-  }
-
-  .ms-result th {
-    width: 12%;
-  }
-
-  .ms-result td {
-    width: 21.33%;
-  }
-
-  .ms-result th,
-  .ms-result td {
-    padding: 0.35rem 0.5rem;
     border: 1px solid #000;
-    text-align: left;
   }
 
-  .ms-result th {
-    font-size: 8.5pt;
-    font-weight: 400;
+  .ms-result-cell {
+    flex: 1;
+    padding: 0.35rem 0.6rem;
+    border-left: 1px solid #000;
+  }
+
+  .ms-result-cell:first-child {
+    border-left: 0;
+  }
+
+  .ms-result-label {
+    margin: 0;
+    font-size: 8pt;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    white-space: nowrap;
   }
 
-  .ms-big {
-    font-size: 12pt;
+  .ms-result-value {
+    margin: 0.1rem 0 0;
+    font-size: 13pt;
     font-weight: 700;
+    letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
-  }
-
-  .ms-pass,
-  .ms-fail {
-    letter-spacing: 0.08em;
   }
 
   .ms-remark {
