@@ -58,12 +58,39 @@ published.
    its rule, each entry giving that student's own reason, and students who qualify for
    more than one list appearing on each with an "also on" badge. Ten students are on more
    than one; the panel header says so.
-7. **Beyond the four** — the **Sign off, then publish** section turns that checking list
+7. **Beyond the four** — the **What still needs checking** section turns that checking list
    into the job the office is actually doing. The 37 list entries collapse to the **27
    distinct students** who need a human eye, each showing every reason they were flagged.
    Tick them off and the counter and progress bar move; nothing reads as ready to publish
    until all 27 are signed off. Then **Export results (CSV)** writes the office's file and
    **Print marksheet** prints the open student's trace as a statement of result.
+
+### Bonus features
+
+All three bonus features listed in the problem statement are implemented.
+
+**A printable individual marksheet.** Open any student, then **Print marksheet**. The
+interface drops away and the trace prints as a statement of result with a ruled heading —
+every subject, the mark used, the grade point and the rule that decided it. That is the
+paper a school hands a parent.
+
+**Paste or upload a marks sheet, reporting which rows were rejected and why.** Under
+required item 1, press **Import marks**. It takes a paste straight out of a spreadsheet —
+commas or tabs — or a CSV upload, because a school keeps marks in a spreadsheet and not in
+the organizers' JSON. Every row it cannot read is listed with its spreadsheet row number,
+the student, and the reason for that row: a missing id, a missing name or class, an
+optional subject that is not in the case, an optional that is actually compulsory, a
+non-numeric mark, a practical subject given a single number, a blank cell, or a duplicate
+id. It is deliberately not all-or-nothing — good rows import while bad ones are reported,
+because refusing two hundred rows over three would be useless on the afternoon results are
+due. **Download template** exports the loaded case as a sheet, and it round-trips back
+through the importer unchanged.
+
+**A class summary.** The **How the sheet performed** section gives the pass rate overall
+and per class, the grade distribution across all seven letters, the mean GPA among students
+who passed, and the subjects costing the most students their result. It is aggregated from
+the same engine output as everything else, so it cannot disagree with the per-student
+figures.
 
 ### Test or sample data
 
@@ -192,8 +219,9 @@ as complete, and each member tested a requirement they had not built.
 
 - Nothing is persisted. Marks live in memory for the session and reloading restores the
   seeded case. Deliberate for a judged demo, but it means edits cannot be saved.
-- Marks cannot be edited in the interface. The application computes and explains results;
-  it does not enter them. Correcting a wrong mark means loading a corrected case.
+- Marks cannot be edited cell-by-cell in the interface. The application computes and
+  explains results; it does not enter them. A corrected mark is applied by re-importing the
+  sheet, which is how a school would fix a spreadsheet anyway.
 - The hard-edge summary shows one representative per edge type with a count of the rest;
   the full membership of each category is in the checking list.
 - A `compulsory` list of a length other than six is accepted and still divided by six, per

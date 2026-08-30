@@ -16,7 +16,7 @@
     "method": "seeded on start, plus file upload and paste",
     "reset_instructions": "The published fixture case PUB-01 from P08_school_results_public.json is bundled at src/data/seed-p08.json and loads automatically on every page load, so the initial data is restored simply by reloading the page. Nothing is persisted to localStorage or to any server. To load a different case, paste its JSON object into the load box in the header or upload a file containing it."
   },
-  "problem_solving_method": "The grading rules are the entire problem, so they were built as a pure module with a node --test suite written before any user interface, and the interface reads from it. The organizers' published fixture shape was adopted directly as the application's data model rather than designing a schema and mapping onto it, so an unpublished case in the same shape loads without a translation layer. Each of the four required items is owned by exactly one unit on its own branch and its own files, and each is verified on the deployed URL rather than locally before being called done.",
+  "problem_solving_method": "The grading rules are the entire problem, so they were built as a pure module with a node --test suite written before any user interface, and the interface reads from it. The organizers' published fixture shape was adopted directly as the application's data model rather than designing a schema and mapping onto it, so an unpublished case in the same shape loads without a translation layer. Each of the four required items is owned by exactly one unit on its own branch and its own files, and each is verified on the deployed URL rather than locally before being called done. Beyond the four required items, all three bonus features in the problem statement are implemented: a printable individual marksheet, a marks-sheet importer that accepts a spreadsheet paste or CSV and reports every rejected row with its row number and reason, and a class summary giving pass rate, grade distribution and the subjects costing the most students their result.",
   "requirements": {
     "R1": {
       "status": "complete",
@@ -80,7 +80,8 @@
     "The grading rules live in one pure module with a node --test suite written before the interface, because the rules are the problem and the interface is a view of them.",
     "The GPA is rounded once at two decimal places and the letter grade is derived from that rounded value, so the letter and the number shown can never disagree at a band boundary.",
     "A compulsory failure zeroes the GPA and sets the letter to F, but leaves every subject grade point and the uncancelled average populated, because clarification R-13 requires the uncancelled average to stay visible in the trace.",
-    "An absent subject and a subject scored zero are distinct values end to end: absent carries a null mark and renders as AB, zero renders as 0 with its own rule text, per the problem's explicit constraint that the two must not produce the same output."
+    "An absent subject and a subject scored zero are distinct values end to end: absent carries a null mark and renders as AB, zero renders as 0 with its own rule text, per the problem's explicit constraint that the two must not produce the same output.",
+    "The application is built around the exam office's actual task \u2014 load, review, sign off, publish \u2014 rather than stopping at a read-only report. Marks arrive as a spreadsheet because that is what a school has; results leave as a CSV for the office and a printed marksheet for the parent."
   ],
   "known_limitations": [
     "Nothing is persisted. Marks live in memory for the session and reloading restores the seeded case. Deliberate for a judged demo, but it means edits cannot be saved.",
