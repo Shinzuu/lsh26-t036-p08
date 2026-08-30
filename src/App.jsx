@@ -25,11 +25,11 @@ const APP_NAME = 'Result Processor'
 const TAGLINE = 'Takes a school’s raw marks and produces the final result the same way every time — showing which rule decided every number, so a wrong entry is caught before results are published.'
 
 const SECTIONS = [
+  { id: 'section-publish', label: 'Sign off', item: null },
   { id: 'section-data', label: 'Data', item: 'Item 1' },
   { id: 'section-results', label: 'Results', item: 'Item 2' },
   { id: 'section-trace', label: 'Trace', item: 'Item 3' },
   { id: 'section-checking', label: 'Checking list', item: 'Item 4' },
-  { id: 'section-publish', label: 'Publish', item: null },
 ]
 
 function AppBar() {
@@ -100,10 +100,10 @@ function Overview() {
 
       <div className="mt-7 flex flex-wrap gap-2">
         <a
-          href="#section-results"
+          href="#section-publish"
           className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white no-underline hover:opacity-90"
         >
-          See every student’s result
+          See what needs checking
         </a>
         <a
           href="#section-trace"
@@ -162,6 +162,22 @@ function Layout() {
       <main className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6">
         <Overview />
 
+        {/* The office's actual first question — what still needs a human before
+            these results can go out. It sits directly under the landing because
+            it is the reason someone opens this at all; the detail behind every
+            number is below it. */}
+        {!empty && (
+          <section aria-labelledby="publish-section-heading" className="mt-10 space-y-3">
+            <SectionHeading
+              id="section-publish"
+              item="Start here"
+              title="What still needs checking"
+              blurb="Sign off every flagged student, then take the results file for the office and the marksheet for the parent. The evidence behind each one is in the sections below."
+            />
+            <PublishDesk />
+          </section>
+        )}
+
         <section aria-labelledby="data-section-heading" className="mt-10 space-y-3">
           <SectionHeading
             id="section-data"
@@ -211,18 +227,6 @@ function Layout() {
               <CheckingLists />
             </section>
 
-            {/* Beyond the four required items: the job the office is actually
-                doing. Sign every flagged student off, then leave with the two
-                artefacts a school needs — a results file and a marksheet. */}
-            <section aria-labelledby="publish-section-heading" className="mt-12 space-y-3">
-              <SectionHeading
-                id="section-publish"
-                item="Publishing"
-                title="Sign off, then publish"
-                blurb="Work through the flagged students, then take the results file for the office and the marksheet for the parent."
-              />
-              <PublishDesk />
-            </section>
           </>
         )}
 
