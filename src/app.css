@@ -25,6 +25,11 @@
   --color-ok: #3f7d5a;
 
   --font-sans: 'Inter var', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Headings are set in a book serif: this is a school's tabulation record, and a
+     document reads as a document. System faces only, so it costs no request and
+     no licence entry. Figures and data stay in the sans, which has tabular
+     numerals the serif cannot guarantee. */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Charter', Georgia, 'Times New Roman', serif;
   --radius-card: 0.875rem;
 }
 
@@ -119,7 +124,7 @@ section[aria-labelledby] {
 /* The signature element. The trace is the part that answers the problem's real
    demand, so it is the one thing on the page carrying the accent edge — the
    margin mark on the page being checked. Everything else stays quiet. */
-section[aria-labelledby='trace-heading'] {
+.trace-card {
   border-top: 2px solid var(--color-accent);
   background: #fff;
   box-shadow: 0 1px 2px rgb(46 41 42 / 0.06), 0 8px 24px -12px rgb(46 41 42 / 0.18);
@@ -173,14 +178,14 @@ thead th {
   }
 
   /* Only the trace survives, and it prints as a sheet rather than a card. */
-  section[aria-labelledby='trace-heading'] {
+  .trace-card {
     border: 0 !important;
     box-shadow: none !important;
     padding: 0 !important;
     background: #fff !important;
   }
 
-  section[aria-labelledby='trace-heading']::before {
+  .trace-card::before {
     content: 'Statement of result · issued from the school’s tabulation record';
     display: block;
     margin-bottom: 0.75rem;
@@ -216,4 +221,69 @@ thead th {
 tbody tr,
 li {
   position: relative;
+}
+
+/* The trace side panel slides in from the right rather than appearing, so the
+   eye follows it and the reader knows where it came from. Anyone who has asked
+   their system for less motion gets it instantly instead. */
+@keyframes trace-panel-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.trace-panel {
+  animation: trace-panel-in 180ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trace-panel {
+    animation: none;
+  }
+}
+
+/* Inside the side panel the trace is already framed by the panel itself, so it
+   drops its own card: one border, one padding, no box inside a box. */
+.trace-panel .trace-card {
+  border: 0;
+  border-top: 0;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The panel is a page lifted off the register, so its head carries the same
+   double rule as the masthead rather than a card's hairline border. */
+.trace-panel-head {
+  border-bottom: 3px double var(--color-rule);
+  background: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+   Typography. Headings in the display serif, everything that carries a number
+   in the sans so the tabular figures still line up down the register.
+   --------------------------------------------------------------------------- */
+.masthead h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Data never leaves the sans: column heads, figures, chips, controls. */
+thead th,
+.font-mono,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-sans);
+}
+
+.masthead h1 {
+  font-weight: 600;
 }
