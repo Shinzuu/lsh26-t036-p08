@@ -35,7 +35,7 @@ the per-unit prompts.
 |---|---|---|---|---|---|
 | U1 | R1 — dataset of ≥60 students, two classes, ≥8 hard edges, loadable from the fixture shape | shinzuu | `u1-dataset` | done-live | 18:40 — verified live: page opens with 80 students across Class 9 (40) and Class 10 (40) with no upload, all four hard-edge lines naming real students; uploading fixture case PUB-02 switched the header to PUB-02, 60 students, Class 9 (30) and Class 10 (30), and every edge line recomputed to different students and counts. |
 | U2 | R2 — grade point per subject, GPA, letter grade | Rimjhim | `u2-grading-engine` | todo | — |
-| U3 | R3 — per-student trace: mark, grade point, and the rule that decided it | Robiul | `u3-trace` | todo | — |
+| U3 | R3 — per-student trace: mark, grade point, and the rule that decided it | Robiul | `u3-trace` | building | 18:43 — branch cut from the shell + U1 merge; building StudentTrace.jsx against the fixed grading.js/store.js shapes. |
 | U4 | R4 — checking lists: optional rule, practical fail, absent | Dip | `u4-checking-lists` | todo | — |
 
 Status values: `todo` → `building` → `pushed` → **`done-live`**. A row only earns
