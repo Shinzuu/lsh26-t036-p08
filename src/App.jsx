@@ -101,6 +101,7 @@ function Sidebar({ view, setView, open, setOpen, returnFocusTo }) {
       )}
 
       <aside
+        id="app-sidebar"
         className={`app-sidebar ${open ? 'is-open' : ''} fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-ink-300 bg-white`}
       >
         {/* The one saturated block on the screen. White on the accent measures
@@ -150,7 +151,7 @@ function Sidebar({ view, setView, open, setOpen, returnFocusTo }) {
   )
 }
 
-function ViewHeader({ view, onMenu, menuRef }) {
+function ViewHeader({ view, onMenu, menuRef, navOpen }) {
   const v = VIEWS.find((x) => x.id === view)
   return (
     <header className="sticky top-0 z-20 border-b border-ink-300 bg-ink-50/95 backdrop-blur">
@@ -161,6 +162,13 @@ function ViewHeader({ view, onMenu, menuRef }) {
           onClick={onMenu}
           aria-label="Open navigation"
           aria-haspopup="true"
+          // A disclosure button has to report its own state. Without these a
+          // screen-reader user is told there is a menu but never whether it is
+          // open, and has no way to reach it but to hunt — the drawer already
+          // moves focus and closes on Escape, so the state was the last thing
+          // missing.
+          aria-expanded={navOpen}
+          aria-controls="app-sidebar"
           className="rounded-card border border-ink-300 px-2.5 py-1.5 text-sm lg:hidden"
         >
           Menu
@@ -339,7 +347,7 @@ function Layout() {
       </a>
 
       <Sidebar view={view} setView={setView} open={navOpen} setOpen={setNavOpen} returnFocusTo={menuRef} />
-      <ViewHeader view={view} onMenu={() => setNavOpen(true)} menuRef={menuRef} />
+      <ViewHeader view={view} onMenu={() => setNavOpen(true)} menuRef={menuRef} navOpen={navOpen} />
 
       <main id="main" className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6">
         {empty ? (
