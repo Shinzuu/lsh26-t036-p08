@@ -20,6 +20,8 @@ import ResultsTable from './features/ResultsTable.jsx'
 import StudentTrace from './features/StudentTrace.jsx'
 import CheckingLists from './features/CheckingLists.jsx'
 import PublishDesk from './features/PublishDesk.jsx'
+import ClassSummary from './features/ClassSummary.jsx'
+import MarksImport from './features/MarksImport.jsx'
 
 const APP_NAME = 'Result Processor'
 const TAGLINE = 'Takes a school’s raw marks and produces the final result the same way every time — showing which rule decided every number, so a wrong entry is caught before results are published.'
@@ -30,6 +32,7 @@ const SECTIONS = [
   { id: 'section-results', label: 'Results', item: 'Item 2' },
   { id: 'section-trace', label: 'Trace', item: 'Item 3' },
   { id: 'section-checking', label: 'Checking list', item: 'Item 4' },
+  { id: 'section-summary', label: 'Summary', item: null },
 ]
 
 function AppBar() {
@@ -187,6 +190,7 @@ function Layout() {
           />
           <DataSource />
           <LoadError />
+          <MarksImport />
         </section>
 
         {empty ? (
@@ -225,6 +229,16 @@ function Layout() {
                 blurb="Every student whose result was changed by the optional subject rule, a practical fail, or an absence."
               />
               <CheckingLists />
+            </section>
+
+            <section aria-labelledby="summary-section-heading" className="mt-12 space-y-3">
+              <SectionHeading
+                id="section-summary"
+                item="Beyond the four"
+                title="How the sheet performed"
+                blurb="Pass rate by class, where the grades fell, and which subject cost the most students their result."
+              />
+              <ClassSummary />
             </section>
 
           </>
