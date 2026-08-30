@@ -137,7 +137,8 @@ thead th {
    out of the visual flow. The trace's own heading stays visible because it is not
    a duplicate: it names the selected student. */
 #results-heading,
-#checking-lists-heading {
+#checking-lists-heading,
+#summary-heading {
   position: absolute;
   width: 1px;
   height: 1px;

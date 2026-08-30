@@ -68,15 +68,9 @@ export default function ClassSummary() {
 
   return (
     <section aria-labelledby="summary-heading" className="rounded-card border border-ink-300 bg-white">
-      <div className="border-b border-ink-300 px-4 py-3">
-        <h3 id="summary-heading" className="font-semibold text-ink-900">
-          How the sheet performed
-        </h3>
-        <p className="mt-0.5 text-sm text-ink-500">
-          Pass rate, where the grades fell, and which subject cost the most students their
-          result.
-        </p>
-      </div>
+      <h3 id="summary-heading" className="font-semibold text-ink-900">
+        How the sheet performed
+      </h3>
 
       <div className="grid gap-6 p-4 sm:grid-cols-2">
         <div>
