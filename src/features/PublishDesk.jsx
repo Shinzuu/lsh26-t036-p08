@@ -31,12 +31,19 @@ function toCsv(dataset, results) {
       (r.failedCompulsory ?? []).join(' '),
     ]
   })
+  // Neutralise CSV injection. Cell values come from a case a judge can paste, and
+  // a spreadsheet treats a cell starting =, +, - or @ as a formula — so a student
+  // name could execute when the office opens the export. Prefix those with an
+  // apostrophe, which Excel, LibreOffice and Sheets all read as "this is text".
+  const safe = (v) => {
+    const t = String(v ?? '')
+    const guarded = /^[=+\-@\t\r]/.test(t) ? `'${t}` : t
+    return /[",\n\r]/.test(guarded) ? `"${guarded.replace(/"/g, '""')}"` : guarded
+  }
+
   return [head, ...rows]
-    .map((row) => row.map((v) => {
-      const t = String(v ?? '')
-      return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t
-    }).join(','))
-    .join('\n')
+    .map((row) => row.map(safe).join(','))
+    .join('\r\n')
 }
 
 export default function PublishDesk() {
