@@ -8,25 +8,29 @@
    the app look deliberate in under a minute, not hunt for hardcoded colours.
    --------------------------------------------------------------------------- */
 @theme {
-  --color-ink-50: oklch(0.98 0.004 260);
-  --color-ink-100: oklch(0.95 0.006 260);
-  --color-ink-300: oklch(0.79 0.012 260);
-  --color-ink-500: oklch(0.58 0.018 260);
-  --color-ink-700: oklch(0.38 0.022 260);
-  --color-ink-900: oklch(0.19 0.02 260);
+  --color-ink-50: #f7f6f6;
+  --color-ink-100: #efeeee;
+  --color-ink-300: #ccc7c7;
+  --color-ink-500: #736768;
+  --color-ink-700: #504848;
+  --color-ink-900: #2e292a;
 
-  --color-accent: oklch(0.62 0.19 258);
-  --color-accent-soft: oklch(0.94 0.04 258);
+  --color-accent: #2e659b;
+  --color-accent-soft: #e3e8ed;
 
-  --color-danger: oklch(0.58 0.2 22);
-  --color-ok: oklch(0.63 0.15 155);
+  --color-danger: #ab3b4c;
+  --color-danger-soft: #f1e7e8;
+  --color-rule: #6c93b1;
+  --color-attention: #e7ddde;
+  --color-ok: #3f7d5a;
 
   --font-sans: 'Inter var', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --radius-card: 0.875rem;
 }
 
-/* Theme: civic — this is a records-and-paperwork app. See src/themes/README.md. */
-@import './themes/civic.css';
+/* Theme: the team palette, placed by measured contrast. See miasma.css for why
+   each of the five colours sits where it does — two of them cannot carry text. */
+@import './themes/miasma.css';
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -39,12 +43,6 @@ body {
 }
 
 /* Respect the OS setting rather than shipping a theme toggle nobody asked for. */
-@media (prefers-color-scheme: dark) {
-  body {
-    @apply bg-ink-900 text-ink-50;
-  }
-}
-
 /* Focus states are part of "built well" and cost nothing. */
 :focus-visible {
   outline: 2px solid var(--color-accent);

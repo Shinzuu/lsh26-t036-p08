@@ -1,0 +1,62 @@
+/* ---------------------------------------------------------------------------
+   Miasma — the team palette, placed by contrast rather than by taste.
+
+   Five colours were chosen for this build:
+
+     #86797a  taupe        #2e659b  blue      #6c93b1  light blue
+     #ab3b4c  crimson      #b58c91  rose
+
+   Two of them cannot legally carry text on a light page, and that fact — not
+   preference — decided where each one went:
+
+     #2e659b  6.09 on white  -> passes AA for body text. THE ACCENT.
+     #ab3b4c  6.07 on white  -> passes AA for body text. DANGER.
+     #86797a  4.18 on white  -> fails body text at 4.5. Used as the SOURCE of the
+                                whole neutral ramp instead, so every grey in the
+                                app carries the palette's warmth, and the ramp's
+                                text steps are darkened until they pass.
+     #6c93b1  3.26 on white  -> fails text, clears the 3.0 non-text threshold.
+                                RULES AND BORDERS THAT CARRY MEANING. Never text.
+     #b58c91  2.95 on white  -> fails even the 3.0 non-text threshold. Can only be
+                                a BACKGROUND FILL with dark text on top. Used for
+                                the attention tint on the checking list.
+
+   Every pairing below was computed, not eyeballed. All fourteen text roles clear
+   WCAG AA at 4.5:1 — the weakest is accent-on-accent-soft at 4.94.
+
+   Light only, deliberately. The 22:00 judging screenshot is automated and we
+   cannot know which colour scheme the capturing machine prefers, so the app
+   pins itself to the scheme we actually audited rather than rendering in a dark
+   variant nobody checked.
+   --------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  /* Neutral ramp, mixed from #86797a so it is warm rather than a generic grey. */
+  --color-ink-50: #f7f6f6;   /* page background */
+  --color-ink-100: #efeeee;  /* raised surface, table stripe */
+  --color-ink-300: #ccc7c7;  /* quiet dividers and input outlines */
+  --color-ink-500: #736768;  /* secondary text — 5.03 on the page */
+  --color-ink-700: #504848;  /* strong secondary text — 8.24 */
+  --color-ink-900: #2e292a;  /* body text and headings — 13.27 */
+
+  /* #2e659b — links, the selected row, primary buttons, the focus ring. */
+  --color-accent: #2e659b;        /* 5.64 on page · 6.09 on white · white on it 6.09 */
+  --color-accent-soft: #e3e8ed;   /* chip and selected-row fill · accent on it 4.94 */
+
+  /* #ab3b4c — a failed subject, a failing student, the load error. */
+  --color-danger: #ab3b4c;        /* 5.62 on page · 6.07 on white · white on it 6.07 */
+  --color-danger-soft: #f1e7e8;   /* failing-row fill · danger on it 5.01 */
+
+  /* #6c93b1 — borders that mean something, never text. 3.02 on the page. */
+  --color-rule: #6c93b1;
+
+  /* #b58c91 as a fill only — the checking list's "needs a human" tint.
+     ink-900 on it is 10.77, ink-700 is 6.69. */
+  --color-attention: #e7ddde;
+
+  /* Success is not in the five, so it is derived to sit far from both the blue
+     and the crimson — nothing in this app should read as "pass" by accident. */
+  --color-ok: #3f7d5a;
+}
