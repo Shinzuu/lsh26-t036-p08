@@ -74,13 +74,13 @@ decided it — with the causing subject named when a strong average still failed
 > **Proof:** select **Imran Sultana**. The **Trace** panel shows all seven subjects with
 > the real mark used (for a practical subject as `theory + practical = mark`, e.g. Physics
 > `75 + 25 = 100`), the grade point, and the rule sentence that produced it (*"mark 32 is
-> below 33"*, *"mark 76 is in 70–79"*). A banner reads *"Failed compulsory subject:
+> below 33"*, *"mark 83 is 80 or above"*). A banner reads *"Failed compulsory subject:
 > Mathematics (MAT)"* and explains that the uncancelled average of 4.67 becomes 0.00 and F.
 > Below, **How this GPA was reached** writes out that student's own arithmetic:
 > `5.0 + 5.0 + 0.0 + 5.0 + 5.0 + 5.0 = 25.0`, then `max(0, 5.0 − 2.0) = 3.0`, then
 > `(25.0 + 3.0) ÷ 6 = 4.6667`, the cap, and the cancellation.
 >
-> Select **Hasib Khatun** to see the absent case: Biology reads `AB`, never `0`, with the
+> Select **Hasib Khatun (S032)** to see the absent case — names repeat in this dataset, so use the student id or click the name on the hard-edges line: Biology reads `AB`, never `0`, with the
 > rule *"absent — AB, grade point 0"* and an overall result of F. A student who genuinely
 > scored zero reads `0` with the rule *"mark 0 is below 33"* — the two are distinct
 > outputs, as the problem's constraints require.
@@ -98,20 +98,21 @@ decided it — with the causing subject named when a strong average still failed
 ## How the engine was checked
 
 The grading rules are a pure module, `src/lib/grading.js`, with a `node --test` suite
-written before the interface — 26 cases covering every grade-band boundary (33, 39, 40, 49,
+written before the interface — 28 cases covering every grade-band boundary (33, 39, 40, 49,
 50, 59, 60, 69, 70, 79, 80), a theory fail with a passing total, a practical fail with a
 passing theory, an absence in a compulsory subject, an absence in the optional, an optional
 grade point of exactly 2.0 contributing nothing, the 5.00 cap, and a strong average
 cancelled by one failed subject.
 
 ```bash
-node --test src/lib/grading.test.mjs   # 26 pass, 0 fail
+node --test src/lib/grading.test.mjs   # 28 pass, 0 fail
 ```
 
 It was then checked a second way. A second implementation of the rules was written
-independently from the published clarifications and run against all 80 seeded students:
-every GPA, uncancelled average, letter grade, compulsory-point total, optional bonus and
-failed-subject list matched, and all three checking lists matched exactly — 0 mismatches.
+independently from the published clarifications and run against **every published case —
+25 cases, 1,765 students**: every GPA, uncancelled average, letter grade, compulsory-point
+total, optional bonus and failed-subject list matched, and all three checking lists matched
+exactly — **0 mismatches**.
 Tests prove the cases we thought of; the independent cross-check catches the ones we did
 not.
 

@@ -36,7 +36,7 @@ A demo video is **optional** — the event-day guide lists it as
 
 ## Before the leader submits
 
-- [ ] Fill the four `registered_name` fields in `evaluation-manifest.json`.
+- [x] Fill the four `registered_name` fields in `evaluation-manifest.json`. — done, all four present with evidence paths.
 - [ ] **Make this repository public** and keep it public until results are announced.
 - [ ] Copy the **exact forty-character commit SHA** — a branch name or short SHA is
       rejected by the form.
