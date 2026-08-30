@@ -25,6 +25,9 @@
   --radius-card: 0.875rem;
 }
 
+/* Theme: civic — this is a records-and-paperwork app. See src/themes/README.md. */
+@import './themes/civic.css';
+
 html {
   -webkit-text-size-adjust: 100%;
 }
