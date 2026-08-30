@@ -6,6 +6,14 @@ value in the pack's expected table is produced correctly by the shipped engine, 
 
 Four minor findings below, then the evidence, then the open decision.
 
+Every case behind this file is runnable: `node --test qa/T2-cases.mjs` — 44 checks,
+44 passing. Two of them need the organizers' fixture, which lives in the prep repo, so
+they skip unless you point at it:
+`P08_FIXTURE=/path/to/P08_school_results_public.json node --test qa/T2-cases.mjs`.
+The section letters in that file match the section letters here, and the three probes
+carry their finding ids. Those three assert *current* behaviour — if one starts failing,
+the finding it documents has been fixed and this file needs updating.
+
 ---
 
 ### [T2-04] `smoke-live.sh` reports a stale deploy when the deploy is current
