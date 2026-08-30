@@ -373,7 +373,11 @@ export default function ResultsTable() {
                 >
                   GPA
                 </SortHeader>
-                <th scope="col" className="w-12 px-3 py-2 text-right font-medium @min-[30rem]:w-14 @min-[30rem]:px-4">
+                {/* 48px held the column but not its own label: "Grade" needs 56px
+                    at this size and small-caps tracking, so the heading clipped to
+                    "Grad" in the trace column. The 8px comes out of a 232px name
+                    column, which does not notice it. */}
+                <th scope="col" className="w-14 px-3 py-2 text-right font-medium @min-[30rem]:px-4">
                   Grade
                 </th>
               </tr>
