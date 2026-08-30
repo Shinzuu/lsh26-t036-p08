@@ -58,6 +58,12 @@ published.
    its rule, each entry giving that student's own reason, and students who qualify for
    more than one list appearing on each with an "also on" badge. Ten students are on more
    than one; the panel header says so.
+7. **Beyond the four** — the **Sign off, then publish** section turns that checking list
+   into the job the office is actually doing. The 37 list entries collapse to the **27
+   distinct students** who need a human eye, each showing every reason they were flagged.
+   Tick them off and the counter and progress bar move; nothing reads as ready to publish
+   until all 27 are signed off. Then **Export results (CSV)** writes the office's file and
+   **Print marksheet** prints the open student's trace as a statement of result.
 
 ### Test or sample data
 
@@ -128,6 +134,8 @@ on the deployed URL, not on a local server, before being recorded as complete.
 - **Database:** none — nothing is persisted
 - **Deployment:** Cloudflare Pages
 - **Other material tools:** Vite 8 (build), Wrangler (deploy CLI, not shipped)
+- **Exports:** CSV written in-browser with the Blob API; the marksheet uses a print
+  stylesheet — no third-party export or PDF library
 
 See [`LICENSES.md`](LICENSES.md) for third-party materials.
 
@@ -173,6 +181,12 @@ as complete, and each member tested a requirement they had not built.
   — because the problem states explicitly that they must not produce the same output.
 - **Decision:** The four requirements are anchored sections on one page rather than routes
   behind navigation, so a judge reaches every scored item with no setup and no clicks.
+- **Decision:** The application is built around the office's actual task — load, review,
+  sign off, publish — rather than stopping at a read-only report. The checking list is the
+  requirement; the sign-off queue and the two export artefacts are what make it usable by a
+  school that has to hand a parent a piece of paper.
+- **Decision:** Sign-off state is in memory only. A school's marks are never written to
+  storage or to a server, and a judge who reloads gets a clean desk.
 
 ## Known limitations
 
