@@ -25,6 +25,7 @@
  *    row that says so, rather than a row that silently is not there. "Show every
  *    subject" is the item; a table that quietly drops one fails it invisibly.
  */
+import { useId } from 'react'
 import { PRACTICAL_PASS, THEORY_PASS } from '../lib/grading.js'
 import { useDataset, useSelected } from '../lib/store.js'
 
@@ -86,12 +87,13 @@ function MarkUsed({ subject }) {
 }
 
 function Empty() {
+  const headingId = useId()
   return (
     <section
-      aria-labelledby="trace-heading"
-      className="rounded-card border border-ink-300 bg-ink-50/60 p-4"
+      aria-labelledby={headingId}
+      className="trace-card rounded-card border border-ink-300 bg-ink-50/60 p-4"
     >
-      <h2 id="trace-heading" className="text-sm font-semibold text-ink-900">
+      <h2 id={headingId} className="text-sm font-semibold text-ink-900">
         Per-student trace
       </h2>
       <p className="mt-3 rounded-lg border border-dashed border-ink-300 px-4 py-8 text-center text-sm text-ink-500">
@@ -106,6 +108,7 @@ function Empty() {
 }
 
 export default function StudentTrace() {
+  const headingId = useId()
   const { dataset } = useDataset()
   const { selected } = useSelected()
 
@@ -132,12 +135,12 @@ export default function StudentTrace() {
 
   return (
     <section
-      aria-labelledby="trace-heading"
-      className="rounded-card border border-ink-300 bg-ink-50/60 p-4"
+      aria-labelledby={headingId}
+      className="trace-card rounded-card border border-ink-300 bg-ink-50/60 p-4"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
         <div>
-          <h2 id="trace-heading" className="text-sm font-semibold text-ink-900">
+          <h2 id={headingId} className="text-sm font-semibold text-ink-900">
             Trace — {selected.name}{' '}
             <span className="font-mono text-ink-500">({selected.id})</span>
           </h2>

@@ -24,6 +24,7 @@
 import { useMemo } from 'react'
 import { checkingLists } from '../lib/grading.js'
 import { useDataset, useSelected } from '../lib/store.js'
+import { openTrace } from './TracePanel.jsx'
 
 /** The three lists, in the order R-29 states them. */
 const LISTS = [
@@ -213,7 +214,10 @@ export default function CheckingLists() {
                       <li key={`${key}-${id}`}>
                         <button
                           type="button"
-                          onClick={() => select(id)}
+                          onClick={() => {
+                            select(id)
+                            openTrace()
+                          }}
                           aria-current={isSelected ? 'true' : undefined}
                           className={`w-full px-4 py-2.5 text-left transition-colors hover:bg-accent-soft/60 ${
                             isSelected ? 'bg-accent-soft' : ''

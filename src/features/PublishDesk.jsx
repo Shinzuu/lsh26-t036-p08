@@ -12,6 +12,7 @@
  * office, and a printable marksheet for a parent.
  */
 import { useMemo } from 'react'
+import { openTrace } from './TracePanel.jsx'
 import { useDataset, useSelected, useVerification } from '../lib/store.js'
 import { checkingLists } from '../lib/grading.js'
 
@@ -163,7 +164,10 @@ export default function PublishDesk() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => select(student.id)}
+                  onClick={() => {
+                    select(student.id)
+                    openTrace()
+                  }}
                   className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
                 >
                   Open trace

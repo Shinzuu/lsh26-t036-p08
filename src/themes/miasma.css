@@ -37,16 +37,16 @@
   --color-ink-50: #f7f6f6;   /* page background */
   --color-ink-100: #efeeee;  /* raised surface, table stripe */
   --color-ink-300: #ccc7c7;  /* quiet dividers and input outlines */
-  --color-ink-500: #695f60;  /* secondary text — 4.64 at worst, on the attention tint */
+  --color-ink-500: #4d4546;  /* secondary text — 8.63 on page, 7.00 on the attention tint (AAA) */
   --color-ink-700: #504848;  /* strong secondary text — 8.24 */
   --color-ink-900: #2e292a;  /* body text and headings — 13.27 */
 
   /* #2e659b — links, the selected row, primary buttons, the focus ring. */
-  --color-accent: #2e659b;        /* 5.64 on page · 6.09 on white · white on it 6.09 */
+  --color-accent: #234e78;  /* THE ACCENT — 8.00 on page, 7.00 on accent-soft, white on it 8.63 (AAA) */
   --color-accent-soft: #e3e8ed;   /* chip and selected-row fill · accent on it 4.94 */
 
   /* #ab3b4c — a failed subject, a failing student, the load error. */
-  --color-danger: #ab3b4c;        /* 5.62 on page · 6.07 on white · white on it 6.07 */
+  --color-danger: #862e3c;  /* DANGER — 7.88 on page, 7.02 on danger-soft, white on it 8.50 (AAA) */
   --color-danger-soft: #f1e7e8;   /* failing-row fill · danger on it 5.01 */
 
   /* #6c93b1 — borders that mean something, never text. 3.02 on the page. */
@@ -58,5 +58,5 @@
 
   /* Success is not in the five, so it is derived to sit far from both the blue
      and the crimson — nothing in this app should read as "pass" by accident. */
-  --color-ok: #3f7d5a;
+  --color-ok: #2d5840;  /* success text — 7.54 on page (AAA) */
 }

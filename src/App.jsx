@@ -20,6 +20,7 @@ import ResultsTable from './features/ResultsTable.jsx'
 import StudentTrace from './features/StudentTrace.jsx'
 import CheckingLists from './features/CheckingLists.jsx'
 import PublishDesk from './features/PublishDesk.jsx'
+import TracePanel from './features/TracePanel.jsx'
 
 const APP_NAME = 'Result Processor'
 const TAGLINE = 'Takes a school’s raw marks and produces the final result the same way every time — showing which rule decided every number, so a wrong entry is caught before results are published.'
@@ -235,6 +236,8 @@ function Layout() {
           {selected ? `${selected.name} selected.` : 'No student selected.'}
         </p>
       </main>
+
+      <TracePanel />
 
       <footer className="border-t border-ink-300">
         <div className="mx-auto w-full max-w-6xl px-4 py-4 text-xs text-ink-500 sm:px-6">
