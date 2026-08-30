@@ -167,6 +167,35 @@ test('R-11: a practical fail sinks the subject even with a passing theory mark',
   assert.equal(result.rule, 'practical 6 is below the pass mark of 8')
 })
 
+test('R-11: a theory mark of exactly 25 passes, and 24 does not', () => {
+  // The pass mark itself, on both sides. A `<` written as `<=` would hide here and
+  // nowhere else in the suite — T2-03, found by Robiul's coverage read.
+  const atPass = subjectResult({ theory: 25, practical: 8 }, true)
+  assert.equal(atPass.mark, 33)
+  assert.equal(atPass.gradePoint, 1)
+  assert.equal(atPass.failed, false)
+
+  const oneBelow = subjectResult({ theory: 24, practical: 8 }, true)
+  assert.equal(oneBelow.gradePoint, 0)
+  assert.equal(oneBelow.failed, true)
+  assert.equal(oneBelow.rule, 'theory 24 is below the pass mark of 25')
+})
+
+test('R-11: a practical mark of exactly 8 passes, and 7 does not', () => {
+  // 75 + 7 = 82 would be a grade point of 5.0 on the band scale alone, so this also
+  // proves the part rule outranks a high total.
+  const atPass = subjectResult({ theory: 75, practical: 8 }, true)
+  assert.equal(atPass.mark, 83)
+  assert.equal(atPass.gradePoint, 5)
+  assert.equal(atPass.failed, false)
+
+  const oneBelow = subjectResult({ theory: 75, practical: 7 }, true)
+  assert.equal(oneBelow.mark, 82)
+  assert.equal(oneBelow.gradePoint, 0)
+  assert.equal(oneBelow.failed, true)
+  assert.equal(oneBelow.rule, 'practical 7 is below the pass mark of 8')
+})
+
 test('an absent subject shows AB, scores 0 and keeps a null mark', () => {
   const result = subjectResult('AB', true)
   assert.equal(result.absent, true)

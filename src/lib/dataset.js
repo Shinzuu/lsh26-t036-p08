@@ -111,6 +111,13 @@ export function parseDataset(input) {
     if (!codes.has(st.optional)) {
       throw new Error(`${where} names optional subject "${st.optional}", which is not in \`subjects\`.`)
     }
+    // The optional is a *fourth* subject, so it cannot also be one of the six
+    // compulsory ones. Without this the same grade point is counted twice — once
+    // inside compulsoryPoints and again as the optional bonus — and the GPA comes
+    // out high with no warning anywhere (T2-01, found by Robiul).
+    if (data.compulsory.includes(st.optional)) {
+      throw new Error(`${where} names "${st.optional}" as its optional subject, but that is a compulsory subject. The optional must be a fourth subject.`)
+    }
     if (!isObject(st.marks)) throw new Error(`${where} is missing its \`marks\`.`)
     for (const c of [...data.compulsory, st.optional]) {
       if (!(c in st.marks)) throw new Error(`${where} has no mark for "${c}".`)

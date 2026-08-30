@@ -52,7 +52,7 @@ export default function DataSource() {
             Marks loaded — case <span className="font-mono">{summary.caseId}</span>
           </h2>
           <p className="mt-0.5 text-sm text-ink-500">
-            {summary.students} students
+            {summary.students} {summary.students === 1 ? 'student' : 'students'}
             {summary.classes.length > 0 && (
               <> across {summary.classes.map((c) => `${c.name} (${c.count})`).join(' and ')}</>
             )}
@@ -87,7 +87,7 @@ export default function DataSource() {
       {edges.some((e) => e.count > 0) && (
         <div className="mt-4 border-t border-ink-300/70 pt-3">
           <p className="text-xs font-medium uppercase tracking-wide text-ink-500">
-            Hard edges in this data — {covered} students sit on at least one
+            Hard edges in this data — {covered} {covered === 1 ? 'student sits' : 'students sit'} on at least one
           </p>
           <ul className="mt-2 grid gap-2 sm:grid-cols-2">
             {edges.map((edge) => (

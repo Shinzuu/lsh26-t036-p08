@@ -96,7 +96,7 @@ function Layout() {
         </div>
 
         <p className="sr-only">
-          {results.length} students computed. {selected ? `${selected.name} selected.` : 'No student selected.'}
+          {results.length} {results.length === 1 ? 'student' : 'students'} computed. {selected ? `${selected.name} selected.` : 'No student selected.'}
         </p>
       </main>
 
