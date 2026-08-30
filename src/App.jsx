@@ -102,11 +102,11 @@ function Sidebar({ view, setView, open, setOpen, returnFocusTo }) {
 
       <aside
         id="app-sidebar"
-        className={`app-sidebar ${open ? 'is-open' : ''} fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-ink-300 bg-white`}
+        className={`app-sidebar ${open ? 'is-open' : ''} fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-ink-300 bg-ink-50`}
       >
         {/* The one saturated block on the screen. White on the accent measures
             8.63:1 and the soft tint 7.00:1, both AAA. */}
-        <div className="bg-accent px-5 py-4 text-white">
+        <div className="brand-block bg-accent px-5 py-4 text-white">
           <p className="text-base font-semibold tracking-tight">{APP_NAME}</p>
           <p className="mt-0.5 text-xs text-accent-soft">
             Miasma · <span className="font-mono">LSH26-T036</span> · P08
@@ -154,7 +154,7 @@ function Sidebar({ view, setView, open, setOpen, returnFocusTo }) {
 function ViewHeader({ view, onMenu, menuRef, navOpen }) {
   const v = VIEWS.find((x) => x.id === view)
   return (
-    <header className="sticky top-0 z-20 border-b border-ink-300 bg-ink-50/95 backdrop-blur">
+    <header className="rule-double sticky top-0 z-20 bg-ink-50/85 backdrop-blur-md">
       <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
         <button
           ref={menuRef}
@@ -265,23 +265,32 @@ function OverviewView({ setView }) {
   const passing = students - failing
 
   const stats = [
-    { label: 'Students', value: students, tone: 'text-ink-900', bar: 'border-t-accent' },
-    { label: 'Passing', value: passing, tone: 'text-ok', bar: 'border-t-ok' },
-    { label: 'Failing', value: failing, tone: failing > 0 ? 'text-danger' : 'text-ink-900', bar: failing > 0 ? 'border-t-danger' : 'border-t-ink-300' },
-    { label: 'Subjects each', value: dataset ? dataset.compulsory.length + 1 : 0, tone: 'text-ink-900', bar: 'border-t-rule' },
+    { label: 'Students', value: students, tone: 'text-ink-900', bar: 'bg-accent' },
+    { label: 'Passing', value: passing, tone: 'text-ok', bar: 'bg-ok' },
+    { label: 'Failing', value: failing, tone: failing > 0 ? 'text-danger' : 'text-ink-900', bar: failing > 0 ? 'bg-danger' : 'bg-ink-300' },
+    { label: 'Subjects each', value: dataset ? dataset.compulsory.length + 1 : 0, tone: 'text-ink-900', bar: 'bg-rule' },
   ]
 
   return (
     <div className="space-y-6">
-      {/* Hairline grid rather than four floating numbers — it reads as one
-          instrument panel instead of scattered figures. */}
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-ink-300 bg-ink-300 sm:grid-cols-4">
+      {/* Four figures, four sheets. Joined into one slab by hairline seams they
+          read as a single instrument panel from 2014; separated, each figure is
+          its own fact and carries its own tone — which is the only thing the
+          colour here means. The rule sits at the top of each card rather than
+          spanning the row, so it marks that card and not a table edge. */}
+      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className={`border-t-[3px] bg-white px-4 py-3 ${s.bar}`}>
-            <dd className={`text-2xl font-semibold sm:text-3xl ${s.tone}`}>
-              <CountUp value={s.value} />
-            </dd>
-            <dt className="mt-0.5 text-xs uppercase tracking-wide text-ink-500">{s.label}</dt>
+          <div
+            key={s.label}
+            className="rounded-card overflow-hidden border border-ink-300 bg-white"
+          >
+            <div className={`h-[3px] w-full ${s.bar}`} />
+            <div className="px-4 py-3">
+              <dd className={`stat-figure font-semibold ${s.tone}`}>
+                <CountUp value={s.value} />
+              </dd>
+              <dt className="eyebrow mt-1.5 text-ink-500">{s.label}</dt>
+            </div>
           </div>
         ))}
       </dl>
@@ -349,7 +358,7 @@ function Layout() {
       <Sidebar view={view} setView={setView} open={navOpen} setOpen={setNavOpen} returnFocusTo={menuRef} />
       <ViewHeader view={view} onMenu={() => setNavOpen(true)} menuRef={menuRef} navOpen={navOpen} />
 
-      <main id="main" className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6">
+      <main id="main" key={view} className="view-enter mx-auto w-full max-w-5xl px-4 py-6 sm:px-6">
         {empty ? (
           <p className="rounded-card border border-ink-300 p-8 text-center text-ink-500">
             No students loaded. Open <strong>Marks</strong> to paste or upload a case.

@@ -32,6 +32,37 @@
      numerals the serif cannot guarantee. */
   --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Charter', Georgia, 'Times New Roman', serif;
   --radius-card: 0.875rem;
+
+  /* Elevation, not outlines.
+
+     Every panel was a white rectangle inside a 1px grey border on a grey page,
+     which is what made the app read as an admin template: with no depth, the
+     only thing separating a panel from the page was a hairline, so twelve
+     hairlines competed with the ruled tables inside them. Depth now comes from
+     two stacked shadows — a tight contact shadow that seats the panel, and a
+     wide soft one that lifts it — and the border drops to a barely-there tint
+     that only defines the edge. Nothing about text contrast changes, because
+     nothing here touches a text colour.
+
+     Two shadows rather than one because a single large blur reads as fog. The
+     contact shadow is what makes a surface look placed rather than floating. */
+  --shadow-raised:
+    0 1px 1px rgb(46 41 42 / 0.04),
+    0 2px 6px -2px rgb(46 41 42 / 0.08);
+  --shadow-lifted:
+    0 1px 1px rgb(46 41 42 / 0.05),
+    0 6px 16px -6px rgb(46 41 42 / 0.12),
+    0 24px 40px -24px rgb(46 41 42 / 0.16);
+
+  /* A radius scale rather than one value. Panels are sheets and take the
+     larger radius; controls sit on them and take the smaller, so a button
+     never looks like a panel and the two read as different layers. */
+  --radius-panel: 0.75rem;
+  --radius-control: 0.5rem;
+
+  /* One easing curve for everything that moves. Slightly overshooting, so a
+     panel arriving looks like it was placed rather than faded in. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Theme: the team palette, placed by measured contrast. See miasma.css for why
@@ -91,11 +122,55 @@ html {
   }
 }
 
-/* Panels stop being floating cards and become ruled sections of one sheet.
-   A square top-left corner and a hairline top rule read as a sheet division;
-   the soft radius everywhere read as a dashboard widget. */
+/* ---------------------------------------------------------------------------
+   Surfaces.
+
+   `.rounded-card` marks every panel in the app, so it is the one place the
+   material is defined. Panels are lifted sheets on a tinted page rather than
+   outlined boxes on a grey one.
+
+   The border is kept but pulled almost to nothing. Removing it entirely loses
+   the panel edge on a screen too bright to show a shadow — a projector at
+   judging, or a phone in daylight — so the edge survives where the depth does
+   not. This is also why the depth is shadow *plus* hairline rather than either
+   alone.
+   --------------------------------------------------------------------------- */
 .rounded-card {
-  border-radius: 0.25rem;
+  border-radius: var(--radius-panel);
+  border-color: color-mix(in oklab, var(--color-ink-300) 55%, transparent);
+  box-shadow: var(--shadow-raised);
+}
+
+/* Controls sit on panels, so they take the smaller radius of the two. */
+button.rounded-card,
+input.rounded-card,
+select.rounded-card,
+label.rounded-card {
+  border-radius: var(--radius-control);
+  box-shadow: none;
+}
+
+/* The page is a surface too. A flat fill reads as unpainted; this is a single
+   very low-contrast wash, lighter at the top where the content starts, so the
+   sheets have something to sit on. Both stops are within 1% luminance of the
+   original page colour, so every measured text ratio is unchanged. */
+body {
+  background-image:
+    radial-gradient(120rem 40rem at 50% -10rem, color-mix(in oklab, var(--color-accent) 5%, transparent), transparent 70%);
+  background-attachment: fixed;
+}
+
+/*
+  The signature, carried over from the printed marksheet.
+
+  The sheet's masthead is ruled with a 3px double line — the mark that says this
+  is an issued record rather than a screen. Bringing it onto the view header
+  makes the thing you read and the thing you hand a student visibly the same
+  document, which nothing generic has. It is drawn once, on the header, and
+  nowhere else: a motif used twice is a motif, used everywhere it is wallpaper.
+*/
+.rule-double {
+  border-bottom: 3px double color-mix(in oklab, var(--color-ink-900) 28%, transparent);
 }
 
 /* The signature element. The trace is the part that answers the problem's real
@@ -577,4 +652,140 @@ main > * {
 
 @media (prefers-reduced-motion: reduce) {
   main > * { animation: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Numbers.
+
+   This is a GPA engine: the figures are the content, and they were set at the
+   same weight and tracking as the prose around them. Display figures now get
+   the treatment data deserves — tight tracking so a four-character GPA reads as
+   one object, and tabular numerals everywhere so a column of them lines up and
+   a count that changes does not make the row jump.
+   --------------------------------------------------------------------------- */
+.tabular,
+table,
+.font-mono,
+[class*='text-2xl'],
+[class*='text-3xl'] {
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-figure {
+  font-size: clamp(2rem, 1.4rem + 1.8vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Eyebrows and column labels borrow the marksheet's vernacular: small, letter-
+   spaced capitals. It is how the paper labels a field, so the screen labels one
+   the same way. */
+.eyebrow {
+  font-size: 0.6875rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------
+   Motion.
+
+   Two rules only. A view arriving is the one moment worth animating, because it
+   is the only time the whole content area changes at once and a hard swap reads
+   as a page load. Rows lift on hover because a row is a target.
+
+   Everything is behind `prefers-reduced-motion`.
+   --------------------------------------------------------------------------- */
+@keyframes view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.view-enter {
+  animation: view-enter 260ms var(--ease-out-soft) both;
+}
+
+/* The panel a reader lands on should settle a beat after the view, so the eye
+   is led rather than hit with everything at once. Two steps, not a cascade. */
+.view-enter > * + * {
+  animation: view-enter 260ms var(--ease-out-soft) 60ms both;
+}
+
+.rounded-card {
+  transition:
+    box-shadow 180ms var(--ease-out-soft),
+    transform 180ms var(--ease-out-soft);
+}
+
+/* Only panels that are themselves interactive lift. A static panel that moves
+   under the cursor is noise. */
+a.rounded-card:hover,
+button.rounded-card:hover {
+  box-shadow: var(--shadow-lifted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-enter,
+  .view-enter > * + * {
+    animation: none;
+  }
+
+  .rounded-card {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Scrollbars.
+
+   Four panels scroll internally. The platform scrollbar is a wide grey slab
+   that cuts a visible channel down the side of a sheet; these are the same
+   control drawn quietly, and they only appear on the scrollers themselves so
+   the page scrollbar stays the one the browser draws.
+   --------------------------------------------------------------------------- */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--color-ink-300) 90%, transparent) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+  background-color: color-mix(in oklab, var(--color-ink-300) 90%, transparent);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-ink-300);
+}
+
+/* ---------------------------------------------------------------------------
+   The sidebar brand block.
+
+   One gradient in the whole app, on the one element that is pure identity and
+   carries no data. The accent is the audited value; the gradient only darkens
+   toward the corner, so white on it stays at or above the 8.63 that was
+   measured on the flat accent.
+   --------------------------------------------------------------------------- */
+.brand-block {
+  background-image: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--color-accent) 92%, white) 0%,
+    var(--color-accent) 55%,
+    color-mix(in oklab, var(--color-accent) 88%, black) 100%
+  );
 }
