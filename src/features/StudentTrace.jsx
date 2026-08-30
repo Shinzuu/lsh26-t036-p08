@@ -161,6 +161,42 @@ export default function StudentTrace() {
     return () => clearTimeout(timer)
   }, [selectedId])
 
+  /**
+   * The other half of the same complaint: the app bar's "Trace" link.
+   *
+   * On a wide screen the results and trace headings sit side by side in one grid
+   * row, at the same scroll offset — so jumping to the trace anchor scrolls the
+   * page by nothing at all and the link reads as broken. The anchor is doing its
+   * job; there is simply nowhere to go. Marking the panel is what turns "nothing
+   * happened" into "that is the thing you asked for".
+   *
+   * The anchor id belongs to `App.jsx`, which is not mine to change, so this
+   * matches on it by name. If it is ever renamed the mark quietly stops — the
+   * link still works, so the failure is invisible rather than broken.
+   */
+  useEffect(() => {
+    let timer
+
+    // The drawer check has to happen per event, not once at subscribe time: on the
+    // very first render `selected` can still be null, the empty state does not
+    // carry the ref, and an effect with no dependencies would then never see the
+    // panel appear.
+    function onHashChange() {
+      if (window.location.hash !== '#section-trace') return
+      const el = panelRef.current
+      if (!el || el.closest('[role="dialog"]')) return
+      setJustChanged(true)
+      window.clearTimeout(timer)
+      timer = window.setTimeout(() => setJustChanged(false), 1100)
+    }
+
+    window.addEventListener('hashchange', onHashChange)
+    return () => {
+      window.removeEventListener('hashchange', onHashChange)
+      window.clearTimeout(timer)
+    }
+  }, [])
+
   if (!selected) return <Empty />
 
   const subjectMeta = new Map((dataset?.subjects ?? []).map((s) => [s.code, s]))
