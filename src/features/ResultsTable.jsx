@@ -59,13 +59,13 @@ export default function ResultsTable() {
         <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <span className="font-medium text-ink-900">{results.length}</span>
           <span className="text-ink-500">students</span>
-          <span aria-hidden="true" className="text-ink-300">
+          <span aria-hidden="true" className="text-rule">
             ·
           </span>
           <span className="text-ink-500">
             <span className="font-medium text-ink-900">{passing}</span> passing
           </span>
-          <span aria-hidden="true" className="text-ink-300">
+          <span aria-hidden="true" className="text-rule">
             ·
           </span>
           <span className={failing > 0 ? 'text-danger' : 'text-ink-500'}>
