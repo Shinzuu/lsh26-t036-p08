@@ -1,3 +1,59 @@
 {
-  "_TODO": "Replace this entire file with the organizer-supplied evaluation-manifest.json template (collected at 17:00) and fill it in: required declarations, per-member contributions, AI-tool use. It must be inside the final commit pushed before 22:00 — only the submitted SHA is judged (29 Aug Discord ruling)."
+  "release_version": "2.1",
+  "team_id": "LSH26-T036",
+  "form_receipt_time": "set by the organizer from the Google Form",
+  "problems": [
+    {
+      "problem_id": "P08",
+      "repository_url": "https://github.com/Shinzuu/lsh26-t036-p08",
+      "live_url": "https://lsh26-t036-p08.pages.dev",
+      "commit_sha": "",
+      "loads_sample_data": "yes, seeded on start from the published P08 fixture case PUB-01; any case in the same shape can be pasted or uploaded",
+      "requirements": {
+        "R1": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        },
+        "R2": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        },
+        "R3": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        },
+        "R4": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        }
+      },
+      "known_limitations": []
+    },
+    {
+      "problem_id": "P10",
+      "repository_url": "https://github.com/Shinzuu/lsh26-t036-p10",
+      "live_url": "https://lsh26-t036-p10.pages.dev",
+      "commit_sha": "",
+      "loads_sample_data": "yes, seeded on start from the published P10 fixture case PUB-01; any case in the same shape can be pasted or uploaded",
+      "requirements": {
+        "R1": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        },
+        "R2": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        },
+        "R3": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        },
+        "R4": {
+          "status": "complete|partial|not_attempted",
+          "evidence": ""
+        }
+      },
+      "known_limitations": []
+    }
+  ]
 }
