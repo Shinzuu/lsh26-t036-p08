@@ -33,7 +33,7 @@ the per-unit prompts.
 
 | Unit | Item | Owner | Branch | Status | Last update (time + note) |
 |---|---|---|---|---|---|
-| U1 | R1 — dataset of ≥60 students, two classes, ≥8 hard edges, loadable from the fixture shape | shinzuu | `u1-dataset` | todo | — |
+| U1 | R1 — dataset of ≥60 students, two classes, ≥8 hard edges, loadable from the fixture shape | shinzuu | `u1-dataset` | done-live | 18:40 — verified live: page opens with 80 students across Class 9 (40) and Class 10 (40) with no upload, all four hard-edge lines naming real students; uploading fixture case PUB-02 switched the header to PUB-02, 60 students, Class 9 (30) and Class 10 (30), and every edge line recomputed to different students and counts. |
 | U2 | R2 — grade point per subject, GPA, letter grade | Rimjhim | `u2-grading-engine` | todo | — |
 | U3 | R3 — per-student trace: mark, grade point, and the rule that decided it | Robiul | `u3-trace` | todo | — |
 | U4 | R4 — checking lists: optional rule, practical fail, absent | Dip | `u4-checking-lists` | todo | — |
@@ -65,3 +65,7 @@ One line each, newest on top. The integrator clears these and deletes the line.
 Gotchas found mid-build: rule quirks, deploy traps, licence flags. One line each.
 
 - Repo went live at 18:13 on the starter-kit baseline; smoke-live passed (200, bundle matches local dist).
+- The shell, `src/lib/store.js` and a placeholder for every unit-owned file are merged. Your placeholder names you in a banner — replace the file wholesale, do not build around it.
+- `src/lib/grading.js` currently holds signature-only stubs so the app builds and U3/U4 can lay out against real shapes. U2 replaces it entirely, keeping every export name.
+- U1 is merged and live, so `parseDataset`, `SEED`, `summarise` and `describeEdges` are available from `src/lib/dataset.js`, and the store seeds from a real 80-student roster.
+- JSON imported into a `.js` module needs `with { type: 'json' }` — that keeps the module loadable by plain `node`, which is how U1's validation messages were exercised without a browser.
