@@ -197,3 +197,22 @@ thead th {
 
   @page { margin: 16mm; }
 }
+
+/* ---------------------------------------------------------------------------
+   Stop screen-reader text from stretching the page.
+
+   The roster rows carry `.sr-only` spans so a screen reader hears "S004, failed
+   — GPA 0.00, grade F" rather than four bare cells. Tailwind's `sr-only` is
+   `position: absolute`, and with no positioned ancestor those spans resolve
+   against the document. The roster is ~3,000 px tall inside a 480 px scroller,
+   so it is clipped visually — but the absolute spans escaped the clip and
+   stretched the document to 4,862 px, leaving about 1,080 px of empty scroll
+   below the footer.
+
+   Making each row a containing block keeps them anchored to their row. The
+   accessible text is unchanged; only the page stops scrolling into a void.
+   --------------------------------------------------------------------------- */
+tbody tr,
+li {
+  position: relative;
+}
