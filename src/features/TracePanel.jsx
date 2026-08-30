@@ -126,7 +126,7 @@ export default function TracePanel() {
     if (!open) return
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    closeRef.current?.focus()
+    panelRef.current?.focus()
     return () => {
       document.body.style.overflow = previous
     }
@@ -159,6 +159,7 @@ export default function TracePanel() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="trace-panel-heading"
+        tabIndex={-1}
         className="trace-panel relative flex h-full w-full flex-col border-l-2 border-l-accent bg-ink-50 sm:max-w-3xl"
       >
         <div className="trace-panel-head no-print flex items-baseline justify-between gap-4 px-5 py-3">

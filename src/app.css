@@ -23,6 +23,7 @@
   --color-rule: #6c93b1;
   --color-attention: #e7ddde;
   --color-ok: #3f7d5a;
+  --color-ok-soft: #e8f1eb;
 
   --font-sans: 'Inter var', 'Inter', ui-sans-serif, system-ui, sans-serif;
   /* Headings are set in a book serif: this is a school's tabulation record, and a
@@ -74,15 +75,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Masthead: a document header, not a hero. The double rule is the ledger's. */
-.masthead {
-  border-bottom: 3px double var(--color-rule);
-}
-
-.masthead h1 {
-  letter-spacing: -0.025em;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -91,17 +83,11 @@ html {
   html { scroll-behavior: auto; }
 }
 
-/* Links inside the shell are navigation, not prose — no underline by default. */
-.app-bar a,
-a.no-underline {
-  text-decoration: none;
-}
-
 /* Touch targets on a phone. Judges open this on a handset. */
 @media (max-width: 640px) {
-  .app-bar a,
-  button {
-    min-height: 2.25rem;
+  button,
+  [role='button'] {
+    min-height: 2.75rem;
   }
 }
 
@@ -110,10 +96,6 @@ a.no-underline {
    the soft radius everywhere read as a dashboard widget. */
 .rounded-card {
   border-radius: 0.25rem;
-}
-
-section[aria-labelledby] {
-  border-top: 2px solid var(--color-ink-300);
 }
 
 /* The signature element. The trace is the part that answers the problem's real
@@ -131,34 +113,6 @@ thead th {
   letter-spacing: 0.04em;
 }
 
-/* The shell now gives every section a labelled heading, so a panel's own title
-   would be the second heading saying the same thing. Keep them in the
-   accessibility tree — they are what `aria-labelledby` points at — and take them
-   out of the visual flow. The trace's own heading stays visible because it is not
-   a duplicate: it names the selected student. */
-#results-heading,
-#checking-lists-heading,
-#summary-heading {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-/* ---------------------------------------------------------------------------
-   Print: the marksheet.
-
-   A school's last step is handing a parent a piece of paper. Printing the
-   screen would hand them a screenshot of an app, so print drops everything
-   except the selected student's trace — which already carries every subject,
-   the mark used, the grade point, the rule that decided it and the GPA
-   working. That is a marksheet, and it is the same numbers the office signed
-   off on.
-   --------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------
    Paper.
 
@@ -480,7 +434,7 @@ li {
    Typography. Headings in the display serif, everything that carries a number
    in the sans so the tabular figures still line up down the register.
    --------------------------------------------------------------------------- */
-.masthead h1,
+h1,
 h2,
 h3 {
   font-family: var(--font-display);
@@ -497,10 +451,6 @@ textarea {
   font-family: var(--font-sans);
 }
 
-.masthead h1 {
-  font-weight: 600;
-}
-
 /* ---------------------------------------------------------------------------
    Motion.
 
@@ -508,20 +458,6 @@ textarea {
    decorate. The whole block is disabled for anyone who has asked their system
    for less motion, which is the floor rather than a nicety.
    --------------------------------------------------------------------------- */
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* The landing arrives in sequence rather than all at once, so the eye is led
-   from what this is, to how big the job is, to where to start. */
-.masthead > * { animation: rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.masthead > :nth-child(1) { animation-delay: 0ms; }
-.masthead > :nth-child(2) { animation-delay: 60ms; }
-.masthead > :nth-child(3) { animation-delay: 110ms; }
-.masthead > :nth-child(4) { animation-delay: 160ms; }
-.masthead > :nth-child(5) { animation-delay: 210ms; }
 
 /* A row the pointer is on lifts very slightly toward the reader. 80 rows means
    this has to be cheap: transform and background only, never layout. */
@@ -555,7 +491,6 @@ button { transition: background-color 120ms ease, color 120ms ease, opacity 120m
 .tabular { font-variant-numeric: tabular-nums; }
 
 @media (prefers-reduced-motion: reduce) {
-  .masthead > *,
   .trace-panel {
     animation: none !important;
   }

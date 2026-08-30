@@ -96,7 +96,7 @@ function Empty() {
       <h2 id={headingId} className="text-sm font-semibold text-ink-900">
         Per-student trace
       </h2>
-      <p className="mt-3 rounded-lg border border-dashed border-ink-300 px-4 py-8 text-center text-sm text-ink-500">
+      <p className="mt-3 rounded-card border border-dashed border-ink-300 px-4 py-8 text-center text-sm text-ink-500">
         No student selected.
         <br />
         Choose a student from the results list, or click a name in the hard-edges line above,
@@ -238,7 +238,7 @@ export default function StudentTrace() {
         between the item passing and the judge hunting for it.
       */}
       {hasFailure && (
-        <div className="mt-3 rounded-lg border border-danger/40 bg-danger/5 px-3 py-2 text-sm text-danger">
+        <div className="mt-3 rounded-card border border-danger/40 bg-danger/5 px-3 py-2 text-sm text-danger">
           <p className="font-semibold">
             Failed compulsory {failed.length === 1 ? 'subject' : 'subjects'}:{' '}
             {failed.map((code) => `${nameOf(code)} (${code})`).join(', ')}
@@ -292,7 +292,7 @@ export default function StudentTrace() {
                     {nameOf(code)}{' '}
                     <span className="font-mono text-xs font-normal text-ink-500">{code}</span>{' '}
                     {isOptional && (
-                      <span className="ml-1 rounded bg-ink-100 px-1 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink-700">
+                      <span className="ml-1 rounded bg-ink-100 px-1 py-0.5 text-[11px] font-medium uppercase tracking-wide text-ink-700">
                         optional
                       </span>
                     )}

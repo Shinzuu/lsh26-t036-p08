@@ -65,7 +65,7 @@ export default function DataSource() {
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
+            className="rounded-card border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
           >
             {open ? 'Cancel' : 'Load other marks'}
           </button>
@@ -76,7 +76,7 @@ export default function DataSource() {
               select(null)
               setError(null)
             }}
-            className="rounded-lg px-3 py-1.5 text-sm text-ink-500 underline underline-offset-2 hover:text-ink-700"
+            className="rounded-card px-3 py-1.5 text-sm text-ink-500 underline underline-offset-2 hover:text-ink-700"
           >
             Restore sample data
           </button>
@@ -132,14 +132,14 @@ export default function DataSource() {
             rows={5}
             spellCheck={false}
             placeholder='{ "case_id": "PUB-02", "subjects": [ ... ], "compulsory": [ ... ], "students": [ ... ] }'
-            className="mt-2 w-full rounded-lg border border-ink-300 bg-white p-2 font-mono text-xs text-ink-900"
+            className="mt-2 w-full rounded-card border border-ink-300 bg-white p-2 font-mono text-xs text-ink-900"
           />
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <button
               type="button"
               disabled={!text.trim()}
               onClick={() => apply(text)}
-              className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
+              className="rounded-card bg-accent px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
             >
               Load pasted marks
             </button>
@@ -147,7 +147,7 @@ export default function DataSource() {
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
+              className="rounded-card border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
             >
               Choose a .json file
             </button>

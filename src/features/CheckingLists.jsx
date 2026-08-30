@@ -182,7 +182,7 @@ export default function CheckingLists() {
   return (
     <section aria-labelledby="checking-lists-heading">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 id="checking-lists-heading" className="text-lg font-semibold tracking-tight">
+        <h2 id="checking-lists-heading" className="font-semibold text-ink-900">
           Checking list before results go out
         </h2>
         <p className="text-sm text-ink-500">
@@ -209,7 +209,7 @@ export default function CheckingLists() {
               key={key}
               className="flex min-w-0 flex-col rounded-card border border-ink-300 bg-white"
             >
-              <div className="border-b border-ink-300 px-4 py-3">
+              <div className="border-b border-ink-300 bg-ink-50 px-4 py-3">
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-semibold text-accent">{title}</h3>
                   <span

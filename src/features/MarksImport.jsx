@@ -66,11 +66,11 @@ export default function MarksImport() {
 
   return (
     <section aria-labelledby="import-heading" className="rounded-card border border-ink-300 bg-white">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink-300 px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink-300 bg-ink-50 px-4 py-3">
         <div>
-          <h3 id="import-heading" className="font-semibold text-ink-900">
+          <h2 id="import-heading" className="font-semibold text-ink-900">
             Import a marks sheet
-          </h3>
+          </h2>
           <p className="mt-0.5 text-sm text-ink-500">
             Paste from a spreadsheet or upload a CSV. Rejected rows are listed with the reason.
           </p>
@@ -79,7 +79,7 @@ export default function MarksImport() {
           <button
             type="button"
             onClick={downloadTemplate}
-            className="rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
+            className="rounded-card border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
           >
             Download template
           </button>
@@ -87,7 +87,7 @@ export default function MarksImport() {
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+            className="rounded-card bg-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
           >
             {open ? 'Close' : 'Import marks'}
           </button>
@@ -114,7 +114,7 @@ export default function MarksImport() {
             rows={6}
             spellCheck={false}
             placeholder={'id,name,class,optional,BAN,ENG,MAT,PHY,CHE,BIO,HMT\nS001,Kamal Begum,Class 9,HMT,75,69,84,52+19,54+19,64+19,56+18'}
-            className="w-full rounded-lg border border-ink-300 bg-white p-2 font-mono text-xs text-ink-900"
+            className="w-full rounded-card border border-ink-300 bg-white p-2 font-mono text-xs text-ink-900"
           />
 
           <div className="flex flex-wrap items-center gap-3">
@@ -122,7 +122,7 @@ export default function MarksImport() {
               type="button"
               disabled={!text.trim()}
               onClick={() => run(text)}
-              className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
+              className="rounded-card bg-accent px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
             >
               Import pasted sheet
             </button>
@@ -130,7 +130,7 @@ export default function MarksImport() {
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
+              className="rounded-card border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
             >
               Upload a .csv file
             </button>
@@ -166,7 +166,7 @@ export default function MarksImport() {
           {rejected.length === 0 ? (
             <p className="mt-1 text-sm text-ok">Every row in that sheet was accepted.</p>
           ) : (
-            <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-ink-300">
+            <div className="mt-2 max-h-56 overflow-y-auto rounded-card border border-ink-300">
               <table className="w-full text-left text-sm">
                 <caption className="sr-only">Rows that could not be read, and why</caption>
                 <thead className="bg-ink-100 text-xs text-ink-700">

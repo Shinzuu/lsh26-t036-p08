@@ -68,14 +68,16 @@ export default function ClassSummary() {
 
   return (
     <section aria-labelledby="summary-heading" className="rounded-card border border-ink-300 bg-white">
-      <h3 id="summary-heading" className="font-semibold text-ink-900">
-        How the sheet performed
-      </h3>
+      <div className="border-b border-ink-300 bg-ink-50 px-4 py-3">
+        <h2 id="summary-heading" className="font-semibold text-ink-900">
+          How the sheet performed
+        </h2>
+      </div>
 
       <div className="grid gap-6 p-4 sm:grid-cols-2">
         <div>
           <div className="flex items-baseline gap-2">
-            <p className="text-3xl font-semibold text-ink-900">{s.passRate.toFixed(1)}%</p>
+            <p className="text-3xl font-semibold text-ok">{s.passRate.toFixed(1)}%</p>
             <p className="text-sm text-ink-500">passed</p>
           </div>
           <p className="mt-1 text-sm text-ink-500">
@@ -89,7 +91,7 @@ export default function ClassSummary() {
               return (
                 <li key={c.name} className="flex items-center gap-3 text-sm">
                   <span className="w-20 shrink-0 text-ink-500">{c.name}</span>
-                  <span className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-ink-100">
+                  <span className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-accent-soft">
                     <span
                       className="block h-full rounded-full bg-accent"
                       style={{ width: `${rate}%` }}
@@ -112,7 +114,7 @@ export default function ClassSummary() {
               return (
                 <li key={l} className="flex items-center gap-3 text-sm">
                   <span className="w-6 shrink-0 font-mono text-ink-700">{l}</span>
-                  <span className="h-3 min-w-0 flex-1 overflow-hidden rounded-sm bg-ink-100">
+                  <span className="h-3 min-w-0 flex-1 overflow-hidden rounded-sm bg-accent-soft">
                     <span
                       className={`block h-full rounded-sm ${l === 'F' ? 'bg-danger' : 'bg-accent'}`}
                       style={{ width: `${(n / peak) * 100}%` }}

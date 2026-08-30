@@ -181,7 +181,7 @@ export default function ResultsTable() {
       className="flex flex-col overflow-hidden rounded-card border border-ink-300 bg-white"
     >
       {/* Header — what this panel is, and the two counts a teacher reads first. */}
-      <div className="border-b border-ink-300 px-4 py-3">
+      <div className="border-b border-ink-300 bg-ink-50 px-4 py-3">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 id="results-heading" className="text-sm font-semibold text-ink-900">
             Results
@@ -224,13 +224,13 @@ export default function ResultsTable() {
             // 34px tall was under the 36px this app sets for itself on a phone,
             // and under the 44px a thumb wants. Height is set outright rather
             // than left to line-height so it cannot drift with the type scale.
-            className="min-h-[2.5rem] min-w-0 flex-1 rounded-lg border border-ink-300 bg-white px-3 py-2 text-sm text-ink-900 transition-colors placeholder:text-ink-500 hover:border-rule"
+            className="min-h-[2.5rem] min-w-0 flex-1 rounded-card border border-ink-300 bg-white px-3 py-2 text-sm text-ink-900 transition-colors placeholder:text-ink-500 hover:border-rule"
           />
           {searching && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="min-h-[2.5rem] shrink-0 rounded-lg border border-ink-300 px-3 py-1.5 text-xs font-medium text-ink-700 transition-colors hover:bg-ink-100"
+              className="min-h-[2.5rem] shrink-0 rounded-card border border-ink-300 px-3 py-1.5 text-xs font-medium text-ink-700 transition-colors hover:bg-ink-100"
             >
               Clear
             </button>
@@ -255,7 +255,7 @@ export default function ResultsTable() {
                 onClick={() => setScope(s.id)}
                 aria-pressed={scope === s.id}
                 className={[
-                  'min-h-[2rem] rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors',
+                  'min-h-[2rem] rounded-card border px-2.5 py-1 text-xs font-medium transition-colors',
                   scope === s.id
                     ? 'border-accent bg-accent-soft text-accent'
                     : 'border-ink-300 bg-white text-ink-700 hover:bg-ink-100',
@@ -278,7 +278,7 @@ export default function ResultsTable() {
                 onChange={(e) => setKlass(e.target.value)}
                 // 2.25rem to match the phone minimum the stylesheet sets for
                 // buttons; a <select> is not covered by that rule.
-                className="min-h-[2.25rem] rounded-lg border border-ink-300 bg-white px-2 py-1 text-xs font-medium text-ink-700"
+                className="min-h-[2.25rem] rounded-card border border-ink-300 bg-white px-2 py-1 text-xs font-medium text-ink-700"
               >
                 <option value="all">All classes</option>
                 {classes.map((c) => (
@@ -482,7 +482,7 @@ export default function ResultsTable() {
             <button
               type="button"
               onClick={() => setLimit((n) => n + PAGE)}
-              className="rounded-lg border border-ink-300 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-900 hover:bg-ink-100"
+              className="rounded-card border border-ink-300 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-900 hover:bg-ink-100"
             >
               Show {Math.min(PAGE, hidden)} more
             </button>
@@ -490,7 +490,7 @@ export default function ResultsTable() {
               <button
                 type="button"
                 onClick={() => setLimit(filtered.length)}
-                className="rounded-lg border border-ink-300 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-700 hover:bg-ink-100"
+                className="rounded-card border border-ink-300 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-700 hover:bg-ink-100"
               >
                 Show all {filtered.length}
               </button>

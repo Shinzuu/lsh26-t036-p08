@@ -13,7 +13,7 @@
  *
  * Each panel is a separate unit's file; this file only decides where they live.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { StoreProvider, useDataset, useSelected } from './lib/store.js'
 import DataSource from './features/DataSource.jsx'
 import ResultsTable from './features/ResultsTable.jsx'
@@ -67,9 +67,27 @@ function useCounts() {
   return { students: results.length, failing, flagged }
 }
 
-function Sidebar({ view, setView, open, setOpen }) {
-  const { students, flagged } = useCounts()
-  const badge = { overview: flagged, results: students, checking: flagged }
+function Sidebar({ view, setView, open, setOpen, returnFocusTo }) {
+  const { flagged } = useCounts()
+  const firstItemRef = useRef(null)
+
+  // The drawer behaves like the trace panel: Escape closes it, focus moves in
+  // when it opens and goes back to the Menu button when it closes.
+  useEffect(() => {
+    if (!open) return
+    firstItemRef.current?.focus()
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        returnFocusTo?.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open, setOpen, returnFocusTo])
+  // A pill beside a destination means "needs attention", so only the flagged
+  // count earns one. A total student count is a fact, not a warning.
+  const badge = { overview: flagged, checking: flagged }
 
   return (
     <>
@@ -77,7 +95,7 @@ function Sidebar({ view, setView, open, setOpen }) {
         <button
           type="button"
           aria-label="Close navigation"
-          onClick={() => setOpen(false)}
+          onClick={() => { setOpen(false); returnFocusTo?.current?.focus() }}
           className="fixed inset-0 z-30 bg-ink-900/30 lg:hidden"
         />
       )}
@@ -85,32 +103,35 @@ function Sidebar({ view, setView, open, setOpen }) {
       <aside
         className={`app-sidebar ${open ? 'is-open' : ''} fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-ink-300 bg-white`}
       >
-        <div className="border-b border-ink-300 px-5 py-4">
-          <p className="text-base font-semibold tracking-tight text-ink-900">{APP_NAME}</p>
-          <p className="mt-0.5 text-xs text-ink-500">
+        {/* The one saturated block on the screen. White on the accent measures
+            8.63:1 and the soft tint 7.00:1, both AAA. */}
+        <div className="bg-accent px-5 py-4 text-white">
+          <p className="text-base font-semibold tracking-tight">{APP_NAME}</p>
+          <p className="mt-0.5 text-xs text-accent-soft">
             Miasma · <span className="font-mono">LSH26-T036</span> · P08
           </p>
         </div>
 
         <nav aria-label="Sections" className="flex-1 overflow-y-auto p-3">
           <ul className="space-y-0.5">
-            {VIEWS.map((v) => {
+            {VIEWS.map((v, i) => {
               const active = v.id === view
               const count = badge[v.id]
               return (
                 <li key={v.id}>
                   <button
+                    ref={i === 0 ? firstItemRef : undefined}
                     type="button"
                     onClick={() => { setView(v.id); setOpen(false) }}
                     aria-current={active ? 'page' : undefined}
-                    className={`nav-item flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${
+                    className={`nav-item flex w-full items-center gap-2 rounded-card px-3 py-2 text-left text-sm ${
                       active ? 'is-active bg-accent-soft font-medium text-accent' : 'text-ink-700 hover:bg-ink-100'
                     }`}
                   >
                     <span className="min-w-0 flex-1 truncate">{v.label}</span>
-                    {v.item && <span className="shrink-0 font-mono text-[0.65rem] text-ink-500">R{v.item}</span>}
+                    {v.item && <span className="shrink-0 font-mono text-[0.6875rem] text-ink-500">R{v.item}</span>}
                     {typeof count === 'number' && count > 0 && (
-                      <span className="tabular shrink-0 rounded-full bg-ink-100 px-1.5 py-0.5 font-mono text-[0.65rem] text-ink-700">
+                      <span className="tabular shrink-0 rounded-full bg-accent-soft px-1.5 py-0.5 font-mono text-[0.6875rem] font-medium text-accent">
                         {count}
                       </span>
                     )}
@@ -121,7 +142,7 @@ function Sidebar({ view, setView, open, setOpen }) {
           </ul>
         </nav>
 
-        <p className="border-t border-ink-300 px-5 py-3 text-[0.65rem] text-ink-500">
+        <p className="border-t border-ink-300 px-5 py-3 text-[0.6875rem] text-ink-500">
           LofiStack Hackathon 2026
         </p>
       </aside>
@@ -129,29 +150,31 @@ function Sidebar({ view, setView, open, setOpen }) {
   )
 }
 
-function ViewHeader({ view, onMenu }) {
+function ViewHeader({ view, onMenu, menuRef }) {
   const v = VIEWS.find((x) => x.id === view)
   return (
     <header className="sticky top-0 z-20 border-b border-ink-300 bg-ink-50/95 backdrop-blur">
       <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
         <button
+          ref={menuRef}
           type="button"
           onClick={onMenu}
           aria-label="Open navigation"
-          className="rounded-lg border border-ink-300 px-2.5 py-1.5 text-sm lg:hidden"
+          aria-haspopup="true"
+          className="rounded-card border border-ink-300 px-2.5 py-1.5 text-sm lg:hidden"
         >
           Menu
         </button>
         <div className="min-w-0">
-          <h1 className="truncate text-lg font-semibold tracking-tight text-ink-900">
+          <h1 className="text-lg font-semibold tracking-tight text-ink-900">
             {v.label}
             {v.item && (
-              <span className="ml-2 font-mono text-xs font-normal text-ink-500">
+              <span className="ml-2 inline-block rounded-full bg-accent-soft px-2 py-0.5 align-middle font-sans text-xs font-medium text-accent">
                 Required item {v.item}
               </span>
             )}
           </h1>
-          <p className="truncate text-sm text-ink-500">{v.hint}</p>
+          <p className="text-sm text-ink-500">{v.hint}</p>
         </div>
       </div>
     </header>
@@ -198,7 +221,7 @@ function TraceActions() {
         <button
           type="button"
           onClick={() => window.print()}
-          className="shrink-0 rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-900 hover:bg-ink-100"
+          className="shrink-0 rounded-card border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-900 hover:bg-ink-100"
         >
           Print marksheet
         </button>
@@ -221,7 +244,7 @@ function TraceActions() {
           value={school}
           onChange={(e) => setSchool(e.target.value)}
           placeholder="Your school's name — optional"
-          className="min-w-0 flex-1 rounded-lg border border-ink-300 px-2.5 py-1 text-sm text-ink-900 placeholder:text-ink-500"
+          className="min-w-0 flex-1 rounded-card border border-ink-300 px-2.5 py-1 text-sm text-ink-900 placeholder:text-ink-500"
         />
       </div>
     </div>
@@ -234,10 +257,10 @@ function OverviewView({ setView }) {
   const passing = students - failing
 
   const stats = [
-    { label: 'Students', value: students, tone: 'text-ink-900' },
-    { label: 'Passing', value: passing, tone: 'text-ok' },
-    { label: 'Failing', value: failing, tone: failing > 0 ? 'text-danger' : 'text-ink-900' },
-    { label: 'Subjects each', value: dataset ? dataset.compulsory.length + 1 : 0, tone: 'text-ink-900' },
+    { label: 'Students', value: students, tone: 'text-ink-900', bar: 'border-t-accent' },
+    { label: 'Passing', value: passing, tone: 'text-ok', bar: 'border-t-ok' },
+    { label: 'Failing', value: failing, tone: failing > 0 ? 'text-danger' : 'text-ink-900', bar: failing > 0 ? 'border-t-danger' : 'border-t-ink-300' },
+    { label: 'Subjects each', value: dataset ? dataset.compulsory.length + 1 : 0, tone: 'text-ink-900', bar: 'border-t-rule' },
   ]
 
   return (
@@ -246,7 +269,7 @@ function OverviewView({ setView }) {
           instrument panel instead of scattered figures. */}
       <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-ink-300 bg-ink-300 sm:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className="bg-white px-4 py-3">
+          <div key={s.label} className={`border-t-[3px] bg-white px-4 py-3 ${s.bar}`}>
             <dd className={`text-2xl font-semibold sm:text-3xl ${s.tone}`}>
               <CountUp value={s.value} />
             </dd>
@@ -272,9 +295,35 @@ function OverviewView({ setView }) {
   )
 }
 
+const VIEW_IDS = new Set(VIEWS.map((v) => v.id))
+const viewFromHash = () => {
+  if (typeof window === 'undefined') return 'overview'
+  const h = window.location.hash.slice(1)
+  return VIEW_IDS.has(h) ? h : 'overview'
+}
+
 function Layout() {
-  const [view, setView] = useState('overview')
+  // The current view is the URL hash, so a refresh keeps it, the back button
+  // works, and a judge can be sent straight to `#checking`. Hashes that are not
+  // a view — the skip link's `#main`, say — are left alone rather than treated
+  // as a request to change screen.
+  const [view, setViewState] = useState(viewFromHash)
+  useEffect(() => {
+    const onHash = () => {
+      const h = window.location.hash.slice(1)
+      if (VIEW_IDS.has(h)) setViewState(h)
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  const setView = (id) => {
+    if (!VIEW_IDS.has(id)) return
+    setViewState(id)
+    if (window.location.hash !== `#${id}`) window.history.pushState(null, '', `#${id}`)
+  }
+
   const [navOpen, setNavOpen] = useState(false)
+  const menuRef = useRef(null)
   const { dataset, results } = useDataset()
   const { selected } = useSelected()
   const empty = !dataset || dataset.students.length === 0
@@ -284,13 +333,13 @@ function Layout() {
     <div className="app-shell min-h-dvh lg:pl-64">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-white"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-card focus:bg-accent focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-white"
       >
         Skip to content
       </a>
 
-      <Sidebar view={view} setView={setView} open={navOpen} setOpen={setNavOpen} />
-      <ViewHeader view={view} onMenu={() => setNavOpen(true)} />
+      <Sidebar view={view} setView={setView} open={navOpen} setOpen={setNavOpen} returnFocusTo={menuRef} />
+      <ViewHeader view={view} onMenu={() => setNavOpen(true)} menuRef={menuRef} />
 
       <main id="main" className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6">
         {empty ? (
@@ -324,12 +373,16 @@ function Layout() {
 
             {/* Roster beside the trace: pick on the left, read the reasoning on
                 the right, without leaving the view. */}
+            {/* Roster beside the trace from xl up. Below that they stack, and the
+                trace goes first: it is what the reader came here for, and the
+                roster is a 30rem scroller that would otherwise push it under the
+                fold on every click. */}
             {view === 'trace' && (
               <div className="grid gap-4 xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-                <div className="min-w-0"><ResultsTable /></div>
-                <div className="min-w-0 space-y-3">
-                  <TraceActions />
+                <div className="order-2 min-w-0 xl:order-1"><ResultsTable /></div>
+                <div className="order-1 min-w-0 space-y-3 xl:order-2">
                   <StudentTrace />
+                  <TraceActions />
                 </div>
               </div>
             )}
