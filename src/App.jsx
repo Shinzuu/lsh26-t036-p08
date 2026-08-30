@@ -14,6 +14,7 @@
  *
  * Each panel is a separate unit's file; this file only decides where they sit.
  */
+import { useEffect, useState } from 'react'
 import { StoreProvider, useDataset, useSelected } from './lib/store.js'
 import DataSource from './features/DataSource.jsx'
 import ResultsTable from './features/ResultsTable.jsx'
@@ -66,6 +67,30 @@ function AppBar() {
   )
 }
 
+/**
+ * Counts from 0 to its value once, so the landing figures read as computed
+ * rather than printed. Honours prefers-reduced-motion by landing immediately.
+ */
+function CountUp({ value }) {
+  const [shown, setShown] = useState(0)
+  useEffect(() => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (reduce || value === 0) { setShown(value); return }
+    const DURATION = 550
+    let raf
+    const start = performance.now()
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / DURATION)
+      // Ease out: fast first, settling at the end, so the final value is legible.
+      setShown(Math.round(value * (1 - Math.pow(1 - t, 3))))
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [value])
+  return <span className="tabular">{shown}</span>
+}
+
 /** The landing block: what this is, and what is actually in the data right now. */
 function Overview() {
   const { dataset, results } = useDataset()
@@ -74,10 +99,10 @@ function Overview() {
   const passing = students - failing
 
   const stats = [
-    { label: 'Students', value: students },
-    { label: 'Passing', value: passing },
-    { label: 'Failing', value: failing },
-    { label: 'Subjects each', value: dataset ? dataset.compulsory.length + 1 : 0 },
+    { label: 'Students', value: students, tone: 'text-ink-900' },
+    { label: 'Passing', value: passing, tone: 'text-ok' },
+    { label: 'Failing', value: failing, tone: failing > 0 ? 'text-danger' : 'text-ink-900' },
+    { label: 'Subjects each', value: dataset ? dataset.compulsory.length + 1 : 0, tone: 'text-ink-900' },
   ]
 
   return (
@@ -96,7 +121,9 @@ function Overview() {
       <dl className="mt-7 grid grid-cols-2 gap-x-6 gap-y-4 sm:flex sm:flex-wrap sm:gap-x-10">
         {stats.map((s) => (
           <div key={s.label}>
-            <dd className="text-2xl font-semibold text-ink-900 sm:text-3xl">{s.value}</dd>
+            <dd className={`text-2xl font-semibold sm:text-3xl ${s.tone}`}>
+              <CountUp value={s.value} />
+            </dd>
             <dt className="text-xs uppercase tracking-wide text-ink-500">{s.label}</dt>
           </div>
         ))}
@@ -171,7 +198,7 @@ function Layout() {
             it is the reason someone opens this at all; the detail behind every
             number is below it. */}
         {!empty && (
-          <section aria-labelledby="publish-section-heading" className="mt-10 space-y-3">
+          <section aria-labelledby="publish-section-heading" className="mt-8 space-y-3 border-t-0">
             <SectionHeading
               id="section-publish"
               item="Start here"

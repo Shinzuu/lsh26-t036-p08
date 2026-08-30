@@ -287,3 +287,76 @@ textarea {
 .masthead h1 {
   font-weight: 600;
 }
+
+/* ---------------------------------------------------------------------------
+   Motion.
+
+   Every animation here reports a state change the user caused. Nothing moves to
+   decorate. The whole block is disabled for anyone who has asked their system
+   for less motion, which is the floor rather than a nicety.
+   --------------------------------------------------------------------------- */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* The landing arrives in sequence rather than all at once, so the eye is led
+   from what this is, to how big the job is, to where to start. */
+.masthead > * { animation: rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.masthead > :nth-child(1) { animation-delay: 0ms; }
+.masthead > :nth-child(2) { animation-delay: 60ms; }
+.masthead > :nth-child(3) { animation-delay: 110ms; }
+.masthead > :nth-child(4) { animation-delay: 160ms; }
+.masthead > :nth-child(5) { animation-delay: 210ms; }
+
+/* A row the pointer is on lifts very slightly toward the reader. 80 rows means
+   this has to be cheap: transform and background only, never layout. */
+tbody tr {
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+/* The selected student is the one the trace is describing, so it stays obvious
+   without shouting — a left rule in the accent, matching the failing row's. */
+tbody tr[aria-selected='true'] {
+  box-shadow: inset 3px 0 0 0 var(--color-accent);
+}
+
+/* Controls acknowledge a press. 40ms is below the threshold where it reads as
+   lag and above the one where it reads as nothing. */
+button:active:not(:disabled) { transform: translateY(0.5px); }
+button { transition: background-color 120ms ease, color 120ms ease, opacity 120ms ease, transform 40ms ease; }
+
+/* A signed-off student settles rather than snapping. */
+.sign-off-row { transition: opacity 200ms ease, color 200ms ease; }
+
+/* Focus is a designed state, not a browser default. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Anything counting toward a total gets tabular figures so the digits do not
+   jitter as the number changes. */
+.tabular { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .masthead > *,
+  .trace-panel {
+    animation: none !important;
+  }
+  tbody tr,
+  button,
+  .sign-off-row {
+    transition: none !important;
+  }
+  button:active:not(:disabled) { transform: none; }
+}
+
+/* The sign-off section sits directly under the masthead's double rule, so it
+   does not add a second hairline 38px below it. */
+section:has(> div > #section-publish),
+section[aria-labelledby='publish-section-heading'] {
+  border-top: 0;
+}

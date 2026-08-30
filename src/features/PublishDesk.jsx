@@ -84,14 +84,16 @@ export default function PublishDesk() {
   return (
     <section aria-labelledby="publish-heading" className="rounded-card border border-ink-300 bg-white">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ink-300 px-4 py-3">
-        <div>
+        <div className="min-w-0">
           <h3 id="publish-heading" className="font-semibold text-ink-900">
             Sign-off before publishing
           </h3>
-          <p className="mt-0.5 text-sm text-ink-500">
+          <p className={`text-sm ${ready || total === 0 ? 'text-ok' : 'text-ink-700'}`}>
             {total === 0
               ? 'Nothing in this sheet needs a second pair of eyes.'
-              : `${total} ${total === 1 ? 'student needs' : 'students need'} checking by hand before these results go out.`}
+              : ready
+                ? 'Every flagged student checked. Ready to publish.'
+                : `${total - done} still to check before publishing.`}
           </p>
         </div>
 
@@ -178,14 +180,7 @@ export default function PublishDesk() {
         </ul>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-300 px-4 py-3">
-        <p className={`text-sm ${ready || total === 0 ? 'text-ok' : 'text-ink-500'}`}>
-          {total === 0
-            ? 'Ready to publish.'
-            : ready
-              ? 'Every flagged student has been checked. Ready to publish.'
-              : `${total - done} still to check before publishing.`}
-        </p>
+      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-ink-300 px-4 py-3">
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
