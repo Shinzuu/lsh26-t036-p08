@@ -178,7 +178,7 @@ export default function ResultsTable() {
   return (
     <section
       aria-labelledby="results-heading"
-      className="flex flex-col overflow-hidden rounded-card border border-ink-300 bg-white"
+      className="@container flex flex-col overflow-hidden rounded-card border border-ink-300 bg-white"
     >
       {/* Header — what this panel is, and the two counts a teacher reads first. */}
       <div className="border-b border-ink-300 bg-ink-50 px-4 py-3">
@@ -336,7 +336,10 @@ export default function ResultsTable() {
             </caption>
             {/*
               Widths live on the header cells rather than in a <colgroup>, because
-              a colgroup cannot be dropped per breakpoint. On a 360px phone the
+              a colgroup cannot be dropped per breakpoint. The breakpoints are
+              CONTAINER queries, not viewport ones: this table also renders in a
+              22rem column beside the trace on a wide screen, where viewport rules
+              saw a laptop and handed the name 88px. On a 360px phone the
               three fixed columns claimed 240px of a 328px row and left the student
               56px — every name truncated to nothing, on the one column a reader
               actually needs. Below `sm` the class column is removed from the table
@@ -357,7 +360,7 @@ export default function ResultsTable() {
                   sortKey="class"
                   sort={sort}
                   setSort={setSort}
-                  className="hidden w-24 px-2 py-2 sm:table-cell"
+                  className="hidden w-20 px-2 py-2 @min-[30rem]:table-cell"
                 >
                   Class
                 </SortHeader>
@@ -366,11 +369,11 @@ export default function ResultsTable() {
                   sort={sort}
                   setSort={setSort}
                   align="right"
-                  className="w-16 px-2 py-2 sm:w-20"
+                  className="w-14 px-2 py-2 @min-[30rem]:w-16"
                 >
                   GPA
                 </SortHeader>
-                <th scope="col" className="w-14 px-3 py-2 text-right font-medium sm:w-16 sm:px-4">
+                <th scope="col" className="w-12 px-3 py-2 text-right font-medium @min-[30rem]:w-14 @min-[30rem]:px-4">
                   Grade
                 </th>
               </tr>
@@ -409,7 +412,7 @@ export default function ResultsTable() {
                         }}
                         className={[
                           'flex w-full min-w-0 flex-col gap-x-2 border-l-2 px-4 py-2 text-left',
-                          'sm:flex-row sm:items-baseline',
+                          '@min-[30rem]:flex-row @min-[30rem]:items-baseline',
                           failed ? 'border-l-danger' : 'border-l-transparent',
                         ].join(' ')}
                       >
@@ -424,11 +427,11 @@ export default function ResultsTable() {
                         </span>
                         {/* The class column is gone below `sm`, so it rides with the
                             name instead of being lost. Deliberately not aria-hidden:
-                            below `sm` the class cell is display:none and therefore
+                            below 30rem the class cell is display:none and therefore
                             unreadable to a screen reader, so this is the only place
-                            the class is announced. Above `sm` this span is the hidden
+                            the class is announced. Above 30rem this span is the hidden
                             one and the cell takes over, so it is never said twice. */}
-                        <span className="truncate text-xs text-ink-500 sm:hidden">{r.class}</span>
+                        <span className="truncate text-xs text-ink-500 @min-[30rem]:hidden">{r.class}</span>
                         <span className="sr-only">
                           {failed
                             ? `, failed — GPA ${formatGpa(r.gpa)}, grade ${r.letter}`
@@ -436,7 +439,7 @@ export default function ResultsTable() {
                         </span>
                       </button>
                     </th>
-                    <td className="hidden truncate px-2 py-2 text-ink-500 sm:table-cell">
+                    <td className="hidden truncate px-2 py-2 text-ink-500 @min-[30rem]:table-cell">
                       {r.class}
                     </td>
                     <td
