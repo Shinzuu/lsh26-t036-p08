@@ -40,11 +40,59 @@ const PAGE = 100
 /** Always two decimals, so 4 reads as 4.00 and the column stays aligned. */
 const formatGpa = (gpa) => (Number.isFinite(gpa) ? gpa.toFixed(2) : '—')
 
+/**
+ * A column header you can order by.
+ *
+ * `aria-sort` on the cell is what tells a screen reader the table is ordered and
+ * which way, so it is set on the `th` rather than the button. The arrow is drawn
+ * only on the active column: an idle arrow on every header reads as decoration
+ * and stops meaning anything. Clicking the active column reverses it; clicking a
+ * different one starts that column ascending, which is what every table people
+ * already use does.
+ */
+function SortHeader({ sortKey, sort, setSort, children, className = '', align = 'left' }) {
+  const active = sort.key === sortKey
+  const dir = active ? sort.dir : null
+  return (
+    <th
+      scope="col"
+      aria-sort={active ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+      className={`font-medium ${align === 'right' ? 'text-right' : 'text-left'} ${className}`}
+    >
+      <button
+        type="button"
+        onClick={() =>
+          setSort((s) =>
+            s.key === sortKey
+              ? { key: sortKey, dir: s.dir === 'asc' ? 'desc' : 'asc' }
+              : { key: sortKey, dir: 'asc' },
+          )
+        }
+        className={[
+          'group flex w-full items-center gap-1 rounded text-xs uppercase tracking-wide transition-colors',
+          align === 'right' ? 'justify-end' : 'justify-start',
+          active ? 'text-accent' : 'text-ink-700 hover:text-ink-900',
+        ].join(' ')}
+      >
+        <span>{children}</span>
+        <span aria-hidden="true" className={active ? 'opacity-100' : 'opacity-0 group-hover:opacity-40'}>
+          {dir === 'desc' ? '↓' : '↑'}
+        </span>
+      </button>
+    </th>
+  )
+}
+
 export default function ResultsTable() {
   const { results } = useDataset()
   const { selectedId, select } = useSelected()
   const [query, setQuery] = useState('')
   const [limit, setLimit] = useState(PAGE)
+  // Who is shown, and in what order. Both default to "everything, as the sheet
+  // came in", so the panel a judge lands on is still the unedited roster.
+  const [scope, setScope] = useState('all')
+  const [klass, setKlass] = useState('all')
+  const [sort, setSort] = useState({ key: null, dir: 'asc' })
 
   // The input renders from `query` so typing is never held up; the table renders
   // from `deferredQuery`, which React is free to compute in a lower-priority pass.
@@ -52,24 +100,62 @@ export default function ResultsTable() {
   // and the character appears only after the table has finished.
   const deferredQuery = useDeferredValue(query)
 
+  /** The classes actually present, so the filter offers only what exists. */
+  const classes = useMemo(
+    () => [...new Set(results.map((r) => r.class))].sort((a, b) => String(a).localeCompare(String(b))),
+    [results],
+  )
+
   const filtered = useMemo(() => {
     const needle = deferredQuery.trim().toLowerCase()
-    if (!needle) return results
-    return results.filter(
-      (r) =>
+    return results.filter((r) => {
+      if (scope === 'failing' && r.failedCompulsory.length === 0) return false
+      if (scope === 'checking' && !(r.flags?.optionalRule || r.flags?.practicalFail || r.flags?.absent)) {
+        return false
+      }
+      if (klass !== 'all' && r.class !== klass) return false
+      if (!needle) return true
+      return (
         r.name.toLowerCase().includes(needle) ||
         r.id.toLowerCase().includes(needle) ||
-        String(r.class).toLowerCase().includes(needle),
-    )
-  }, [results, deferredQuery])
+        String(r.class).toLowerCase().includes(needle)
+      )
+    })
+  }, [results, deferredQuery, scope, klass])
+
+  /**
+   * Sorted for reading, never for grading.
+   *
+   * Default is `key: null` — the sheet's own order — because that is the order
+   * the marks arrived in and the order a clerk checking against paper expects.
+   * Sorting is something the reader turns on.
+   *
+   * `toSorted` would be tidier but is too new to rely on for a judged build, so
+   * this copies first. The comparator always falls back to name, so two students
+   * on the same GPA never swap places between renders.
+   */
+  const sorted = useMemo(() => {
+    if (!sort.key) return filtered
+    const dir = sort.dir === 'desc' ? -1 : 1
+    const byName = (a, b) => a.name.localeCompare(b.name)
+    const compare = {
+      name: byName,
+      class: (a, b) => String(a.class).localeCompare(String(b.class)) || byName(a, b),
+      // The Grade column sorts on the GPA behind it: the letter is derived from
+      // that number, so ordering by one is ordering by the other, and it keeps
+      // every F together in GPA order rather than alphabetically by letter.
+      gpa: (a, b) => a.gpa - b.gpa || byName(a, b),
+    }[sort.key]
+    return [...filtered].sort((a, b) => dir * compare(a, b))
+  }, [filtered, sort])
 
   // Narrowing the search or loading a new sheet starts the budget again, so a
   // reader who paged deep into one roster does not inherit that depth in the next.
   useEffect(() => {
     setLimit(PAGE)
-  }, [deferredQuery, results])
+  }, [deferredQuery, results, scope, klass, sort])
 
-  const visible = useMemo(() => filtered.slice(0, limit), [filtered, limit])
+  const visible = useMemo(() => sorted.slice(0, limit), [sorted, limit])
   const hidden = filtered.length - visible.length
 
   const failing = useMemo(
@@ -77,6 +163,13 @@ export default function ResultsTable() {
     [results],
   )
   const passing = results.length - failing
+  const flagged = useMemo(
+    () =>
+      results.filter((r) => r.flags?.optionalRule || r.flags?.practicalFail || r.flags?.absent)
+        .length,
+    [results],
+  )
+  const filtering = scope !== 'all' || klass !== 'all'
   const searching = query.trim().length > 0
   // The table is one render behind the box. Say so rather than showing stale
   // counts as if they were current.
@@ -143,11 +236,66 @@ export default function ResultsTable() {
             </button>
           )}
         </div>
-        <p aria-live="polite" className="mt-1 text-xs text-ink-500">
+        {/*
+          Who to show. The three scopes are the three questions an exam office
+          actually asks of a finished sheet — everyone, who failed, who a human
+          still has to check — rather than a generic filter builder. Counts sit
+          on the buttons so the answer is visible before the click.
+        */}
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <div role="group" aria-label="Show" className="flex flex-wrap gap-1">
+            {[
+              { id: 'all', label: 'Everyone', count: results.length },
+              { id: 'failing', label: 'Failing', count: failing },
+              { id: 'checking', label: 'Needs checking', count: flagged },
+            ].map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setScope(s.id)}
+                aria-pressed={scope === s.id}
+                className={[
+                  'min-h-[2rem] rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors',
+                  scope === s.id
+                    ? 'border-accent bg-accent-soft text-accent'
+                    : 'border-ink-300 bg-white text-ink-700 hover:bg-ink-100',
+                ].join(' ')}
+              >
+                {s.label}{' '}
+                <span className="tabular-nums font-mono text-[0.7rem] text-ink-500">{s.count}</span>
+              </button>
+            ))}
+          </div>
+
+          {classes.length > 1 && (
+            <>
+              <label htmlFor="roster-class" className="sr-only">
+                Class
+              </label>
+              <select
+                id="roster-class"
+                value={klass}
+                onChange={(e) => setKlass(e.target.value)}
+                // 2.25rem to match the phone minimum the stylesheet sets for
+                // buttons; a <select> is not covered by that rule.
+                className="min-h-[2.25rem] rounded-lg border border-ink-300 bg-white px-2 py-1 text-xs font-medium text-ink-700"
+              >
+                <option value="all">All classes</option>
+                {classes.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+        </div>
+
+        <p aria-live="polite" className="mt-1.5 text-xs text-ink-500">
           {catchingUp
             ? 'Searching…'
-            : searching
-            ? `${filtered.length} of ${results.length} students match.`
+            : searching || filtering
+            ? `${filtered.length} of ${results.length} students shown.`
             : selectedId
               // A student is opened on arrival, so the old prompt contradicted the
               // trace sitting beside it. Say what the row does instead.
@@ -157,14 +305,24 @@ export default function ResultsTable() {
       </div>
 
       {filtered.length === 0 ? (
+        // An empty result is a dead end unless it says which control emptied it,
+        // so the message names what is currently narrowing the roster and the
+        // button undoes exactly that.
         <p className="px-4 py-10 text-center text-sm text-ink-500">
-          No student matches “{query}”.{' '}
+          {searching ? <>No student matches “{query}”</> : 'No student matches these filters'}
+          {filtering && scope === 'failing' && ' among the failing students'}
+          {filtering && scope === 'checking' && ' among the students needing a check'}
+          {klass !== 'all' && ` in ${klass}`}.{' '}
           <button
             type="button"
-            onClick={() => setQuery('')}
+            onClick={() => {
+              setQuery('')
+              setScope('all')
+              setKlass('all')
+            }}
             className="font-medium text-ink-700 underline underline-offset-2"
           >
-            Clear the search
+            Show everyone again
           </button>
         </p>
       ) : (
@@ -187,15 +345,31 @@ export default function ResultsTable() {
             */}
             <thead>
               <tr className="sticky top-0 z-10 bg-ink-100 text-left text-xs uppercase tracking-wide text-ink-700 shadow-[0_1px_0_var(--color-ink-300)]">
-                <th scope="col" className="px-4 py-2 font-medium">
+                <SortHeader
+                  sortKey="name"
+                  sort={sort}
+                  setSort={setSort}
+                  className="px-4 py-2"
+                >
                   Student
-                </th>
-                <th scope="col" className="hidden w-24 px-2 py-2 font-medium sm:table-cell">
+                </SortHeader>
+                <SortHeader
+                  sortKey="class"
+                  sort={sort}
+                  setSort={setSort}
+                  className="hidden w-24 px-2 py-2 sm:table-cell"
+                >
                   Class
-                </th>
-                <th scope="col" className="w-16 px-2 py-2 text-right font-medium sm:w-20">
+                </SortHeader>
+                <SortHeader
+                  sortKey="gpa"
+                  sort={sort}
+                  setSort={setSort}
+                  align="right"
+                  className="w-16 px-2 py-2 sm:w-20"
+                >
                   GPA
-                </th>
+                </SortHeader>
                 <th scope="col" className="w-14 px-3 py-2 text-right font-medium sm:w-16 sm:px-4">
                   Grade
                 </th>
