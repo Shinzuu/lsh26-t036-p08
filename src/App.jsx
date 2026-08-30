@@ -38,34 +38,99 @@ const SECTIONS = [
 ]
 
 function AppBar() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  // Escape closes the menu, so a keyboard user is never stuck inside it.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false)
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
   return (
     <header className="app-bar sticky top-0 z-30 border-b border-ink-300 bg-ink-50/90 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-2.5 sm:px-6">
-        <a href="#section-data" className="flex shrink-0 items-baseline gap-2 no-underline">
-          <span className="text-base font-semibold tracking-tight text-ink-900">{APP_NAME}</span>
+        <a href="#section-data" className="flex min-w-0 shrink items-baseline gap-2 no-underline">
+          <span className="truncate text-base font-semibold tracking-tight text-ink-900">
+            {APP_NAME}
+          </span>
           <span className="hidden text-xs text-ink-500 sm:inline">LSH26-T036 · P08</span>
         </a>
 
-        {/* Horizontally scrollable on a phone rather than wrapping or collapsing
-            into a menu — every destination stays one tap away. */}
-        <nav aria-label="Sections" className="-mx-1 min-w-0 flex-1 overflow-x-auto">
-          <ul className="flex items-center gap-1 px-1">
-            {SECTIONS.map((s) => (
-              <li key={s.id}>
+        {/* Six destinations do not fit on a phone line, so below `sm` they collapse
+            behind a menu button and the inline row returns from `sm` up. */}
+        <nav aria-label="Sections" className="ml-auto hidden min-w-0 sm:block">
+          <ul className="flex items-center gap-1">
+            {SECTIONS.map((sec) => (
+              <li key={sec.id}>
                 <a
-                  href={`#${s.id}`}
+                  href={`#${sec.id}`}
                   className="block whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm text-ink-700 no-underline hover:bg-accent-soft hover:text-accent"
                 >
-                  {s.label}
+                  {sec.label}
                 </a>
               </li>
             ))}
           </ul>
         </nav>
+
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-expanded={menuOpen}
+          aria-controls="section-menu"
+          className="ml-auto flex shrink-0 items-center gap-2 rounded-card border border-ink-300 bg-white px-3 py-1.5 text-sm font-medium text-ink-900 sm:hidden"
+        >
+          {/* Drawn rather than an icon font: three rules, no dependency, and it
+              becomes an X when open so the button reports its own state. */}
+          <span aria-hidden="true" className="relative block h-3 w-4">
+            <span
+              className={`absolute left-0 block h-0.5 w-4 bg-ink-900 transition-transform ${
+                menuOpen ? 'top-1.5 rotate-45' : 'top-0'
+              }`}
+            />
+            <span
+              className={`absolute left-0 top-1.5 block h-0.5 w-4 bg-ink-900 transition-opacity ${
+                menuOpen ? 'opacity-0' : 'opacity-100'
+              }`}
+            />
+            <span
+              className={`absolute left-0 block h-0.5 w-4 bg-ink-900 transition-transform ${
+                menuOpen ? 'top-1.5 -rotate-45' : 'top-3'
+              }`}
+            />
+          </span>
+          {menuOpen ? 'Close' : 'Sections'}
+        </button>
       </div>
+
+      {menuOpen && (
+        <nav
+          id="section-menu"
+          aria-label="Sections"
+          className="border-t border-ink-300 bg-ink-50 sm:hidden"
+        >
+          <ul className="mx-auto w-full max-w-6xl px-4 py-1">
+            {SECTIONS.map((sec) => (
+              <li key={sec.id} className="border-b border-ink-300/60 last:border-b-0">
+                <a
+                  href={`#${sec.id}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-baseline justify-between gap-3 py-2.5 text-sm text-ink-900 no-underline"
+                >
+                  <span className="font-medium">{sec.label}</span>
+                  {sec.item && <span className="text-xs text-ink-500">{sec.item}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </header>
   )
 }
+
 
 /**
  * Counts from 0 to its value once, so the landing figures read as computed

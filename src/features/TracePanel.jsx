@@ -191,14 +191,6 @@ export default function TracePanel() {
               </p>
             )}
           </div>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={close}
-            className="shrink-0 rounded-card border border-ink-300 bg-white px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
-          >
-            Close <span className="ml-1 font-normal text-ink-500">Esc</span>
-          </button>
         </div>
 
         {/* The same component the inline panel renders, reading the same selection. */}
@@ -215,9 +207,15 @@ export default function TracePanel() {
           — offering to sign off something the office was never asked to check
           would invite a tick that means nothing.
         */}
-        {selected && (
-          <div className="border-t border-ink-300 bg-white px-5 py-3">
-            {reasons.length > 0 ? (
+        {/*
+          One action bar. The sign-off and the way out sit together on the same
+          line, because they are the two things a reader does when they have
+          finished reading: record that they checked it, and leave. Splitting them
+          top and bottom made the panel feel like two unrelated strips.
+        */}
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-ink-300 bg-white px-5 py-3">
+          <div className="min-w-0 flex-1">
+            {selected && reasons.length > 0 ? (
               <label className="flex cursor-pointer items-start gap-3">
                 <input
                   type="checkbox"
@@ -239,11 +237,20 @@ export default function TracePanel() {
               <p className="text-xs text-ink-500">
                 <span className="font-medium text-ink-700">Not on the checking list.</span> Nothing
                 changed this student&rsquo;s result by the optional rule, a practical fail or an
-                absence, so there is nothing for the office to verify by hand.
+                absence, so there is nothing to verify by hand.
               </p>
             )}
           </div>
-        )}
+
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={close}
+            className="shrink-0 rounded-card border border-ink-300 bg-white px-4 py-2 text-sm font-medium text-ink-900 hover:bg-ink-100"
+          >
+            Close <span className="ml-1 font-normal text-ink-500">Esc</span>
+          </button>
+        </div>
       </div>
     </div>
   )

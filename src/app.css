@@ -360,3 +360,5 @@ section:has(> div > #section-publish),
 section[aria-labelledby='publish-section-heading'] {
   border-top: 0;
 }
+
+
