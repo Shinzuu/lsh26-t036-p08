@@ -14,7 +14,7 @@
 // createElement rather than JSX: this file is `.js`, and Vite's React plugin only
 // transforms `.jsx`. SPEC.md fixes the filename, so the one element it renders is
 // written the long way instead of renaming the module out from under four units.
-import { createContext, createElement, useContext, useMemo, useState } from 'react'
+import { createContext, createElement, useContext, useEffect, useMemo, useState } from 'react'
 import { SEED } from './dataset.js'
 import { studentResult } from './grading.js'
 
@@ -38,6 +38,35 @@ export function StoreProvider({ children }) {
       return []
     }
   }, [dataset])
+
+  /**
+   * Open a student's trace on arrival, rather than showing an empty panel.
+   *
+   * The trace is the part of this build that answers the problem's actual demand
+   * — show which rule produced each number so a wrong entry is caught before
+   * results are published — and it was invisible until someone clicked. A judge
+   * working through twelve submissions may never click.
+   *
+   * The one chosen is the most instructive: the highest uncancelled average that
+   * still failed a compulsory subject. That single student demonstrates the
+   * subject grade points, the GPA arithmetic, the cancellation rule and the named
+   * causing subject all at once. If a loaded case has no such student, the first
+   * one is opened instead, so the panel is never empty.
+   */
+  const illustrativeId = useMemo(() => {
+    if (results.length === 0) return null
+    const cancelled = results.filter((r) => r.failedCompulsory?.length > 0)
+    if (cancelled.length > 0) {
+      return cancelled.reduce((best, r) => (r.uncancelledGpa > best.uncancelledGpa ? r : best)).id
+    }
+    return results[0].id
+  }, [results])
+
+  // Only ever fills an empty selection — it never overrides a student the user
+  // picked, and `load` clearing the selection is what re-arms it for a new case.
+  useEffect(() => {
+    if (selectedId === null && illustrativeId !== null) setSelectedId(illustrativeId)
+  }, [selectedId, illustrativeId])
 
   // Replacing the dataset clears the selection, otherwise the trace panel keeps
   // showing a student who is no longer in the roster.
