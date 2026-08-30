@@ -102,7 +102,11 @@ export default function ResultsTable() {
         <p aria-live="polite" className="mt-1 text-xs text-ink-500">
           {searching
             ? `Showing ${filtered.length} of ${results.length} students.`
-            : 'Select a student to see the full calculation.'}
+            : selectedId
+              // A student is opened on arrival, so the old prompt contradicted the
+              // trace sitting beside it. Say what the row does instead.
+              ? 'Select any row to open that student’s calculation.'
+              : 'Select a student to see the full calculation.'}
         </p>
       </div>
 
