@@ -2,6 +2,15 @@
 
 One line each, newest on top. Chat evaporates; this file syncs.
 
+- U3: U1's hard-edges line in `DataSource.jsx` already calls `select(id)` on the
+  student names it prints, so a student can be selected — and the trace opened —
+  without `ResultsTable`. Useful for verifying U3/U4 live before U2 is merged, and
+  it is the fastest path to the failing-student trace in the demo video.
+- U3: `StudentTrace` builds its seven rows from `dataset.compulsory` + the student's
+  `optional`, not from `Object.keys(result.subjects)`. A subject the engine has no
+  entry for still renders as a row saying so, rather than vanishing from a table
+  whose whole job is "show every subject".
+
 - U2: `checkingLists(results)` returns whole `studentResult` objects in each of
   `optional` / `practicalFail` / `absent`, not bare ids — so U4 can print the name
   and call `select(row.id)` without a second lookup. SPEC.md fixed the key names
