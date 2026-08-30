@@ -170,17 +170,26 @@ export default function PublishDesk() {
           {visible.map(({ student, why }) => {
             const isDone = verified.has(student.id)
             return (
-              <li key={student.id} className="flex items-center gap-3 px-3 py-2">
-                <input
-                  type="checkbox"
-                  id={`verify-${student.id}`}
-                  checked={isDone}
-                  onChange={() => toggleVerified(student.id)}
-                  className="size-4 shrink-0 accent-[var(--color-accent)]"
-                />
+              <li key={student.id} className="flex items-center gap-1 px-1 py-0.5">
+                {/*
+                  The box itself stays 16px because a checkbox that size is what
+                  the platform draws and what people recognise, but a 16px hit
+                  area on a phone is not tickable — WCAG 2.2 asks for 24px and a
+                  thumb wants more. The padding around it does the work: the box
+                  is unchanged, the target it sits in is 40px square.
+                */}
+                <span className="flex size-10 shrink-0 items-center justify-center">
+                  <input
+                    type="checkbox"
+                    id={`verify-${student.id}`}
+                    checked={isDone}
+                    onChange={() => toggleVerified(student.id)}
+                    className="size-4 accent-[var(--color-accent)]"
+                  />
+                </span>
                 <label
                   htmlFor={`verify-${student.id}`}
-                  className={`min-w-0 flex-1 cursor-pointer text-sm ${isDone ? 'text-ink-500 line-through' : 'text-ink-900'}`}
+                  className={`min-w-0 flex-1 cursor-pointer py-2 text-sm ${isDone ? 'text-ink-500 line-through' : 'text-ink-900'}`}
                 >
                   <span className="font-medium">{student.name}</span>{' '}
                   <span className="font-mono text-xs text-ink-500">{student.id}</span>
@@ -192,7 +201,7 @@ export default function PublishDesk() {
                     select(student.id)
                     openTrace()
                   }}
-                  className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
+                  className="min-h-[2.25rem] shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent-soft"
                 >
                   Open trace
                 </button>

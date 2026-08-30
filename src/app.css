@@ -594,18 +594,33 @@ section[aria-labelledby='publish-section-heading'] {
    --------------------------------------------------------------------------- */
 .app-sidebar {
   transform: translateX(-100%);
-  transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1);
+  /* Translated off-canvas is still *rendered*, so its six destination buttons
+     stayed in the tab order and in the accessibility tree while invisible — a
+     keyboard or screen-reader user tabbed into a menu nobody could see.
+     `visibility: hidden` takes it out of both. The delay keeps the slide-out
+     visible: visibility flips only after the transform has finished. */
+  visibility: hidden;
+  transition:
+    transform 220ms cubic-bezier(0.32, 0.72, 0, 1),
+    visibility 0s linear 220ms;
 }
 
 .app-sidebar.is-open {
   transform: translateX(0);
+  visibility: visible;
   box-shadow: 0 0 40px -8px rgb(46 41 42 / 0.35);
+  /* Opening must not wait on the delay above, or the panel slides in blind. */
+  transition:
+    transform 220ms cubic-bezier(0.32, 0.72, 0, 1),
+    visibility 0s;
 }
 
 @media (min-width: 1024px) {
   .app-sidebar {
     transform: none;
+    visibility: visible;
     box-shadow: none;
+    transition: none;
   }
 }
 

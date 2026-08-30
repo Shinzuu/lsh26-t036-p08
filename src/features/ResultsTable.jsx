@@ -93,7 +93,9 @@ export default function ResultsTable() {
           <h2 id="results-heading" className="text-sm font-semibold text-ink-900">
             Results
           </h2>
-          <p className="text-xs text-ink-500">Required item 2 — grade points, GPA, letter</p>
+          {/* The shell's header already names this view and its item number; a
+              second copy of "Required item 2" inside the panel said it twice on
+              one screen. The counts below carry more than a restated label. */}
         </div>
         <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <span className="font-medium text-ink-900">{results.length}</span>
@@ -126,13 +128,16 @@ export default function ResultsTable() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Name, ID or class"
             autoComplete="off"
-            className="min-w-0 flex-1 rounded-lg border border-ink-300 bg-white px-3 py-1.5 text-sm text-ink-900 placeholder:text-ink-500"
+            // 34px tall was under the 36px this app sets for itself on a phone,
+            // and under the 44px a thumb wants. Height is set outright rather
+            // than left to line-height so it cannot drift with the type scale.
+            className="min-h-[2.5rem] min-w-0 flex-1 rounded-lg border border-ink-300 bg-white px-3 py-2 text-sm text-ink-900 transition-colors placeholder:text-ink-500 hover:border-rule"
           />
           {searching && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="shrink-0 rounded-lg border border-ink-300 px-2.5 py-1.5 text-xs font-medium text-ink-700 hover:bg-ink-100"
+              className="min-h-[2.5rem] shrink-0 rounded-lg border border-ink-300 px-3 py-1.5 text-xs font-medium text-ink-700 transition-colors hover:bg-ink-100"
             >
               Clear
             </button>
@@ -171,24 +176,27 @@ export default function ResultsTable() {
               Every student with their class, GPA and letter grade. Select a row to see the
               full calculation.
             </caption>
-            <colgroup>
-              <col />
-              <col className="w-24" />
-              <col className="w-20" />
-              <col className="w-16" />
-            </colgroup>
+            {/*
+              Widths live on the header cells rather than in a <colgroup>, because
+              a colgroup cannot be dropped per breakpoint. On a 360px phone the
+              three fixed columns claimed 240px of a 328px row and left the student
+              56px — every name truncated to nothing, on the one column a reader
+              actually needs. Below `sm` the class column is removed from the table
+              entirely and reappears under the name, which returns roughly 216px to
+              it, and the number columns tighten by a step.
+            */}
             <thead>
               <tr className="sticky top-0 z-10 bg-ink-100 text-left text-xs uppercase tracking-wide text-ink-700 shadow-[0_1px_0_var(--color-ink-300)]">
                 <th scope="col" className="px-4 py-2 font-medium">
                   Student
                 </th>
-                <th scope="col" className="px-2 py-2 font-medium">
+                <th scope="col" className="hidden w-24 px-2 py-2 font-medium sm:table-cell">
                   Class
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-medium">
+                <th scope="col" className="w-16 px-2 py-2 text-right font-medium sm:w-20">
                   GPA
                 </th>
-                <th scope="col" className="px-4 py-2 text-right font-medium">
+                <th scope="col" className="w-14 px-3 py-2 text-right font-medium sm:w-16 sm:px-4">
                   Grade
                 </th>
               </tr>
@@ -226,16 +234,26 @@ export default function ResultsTable() {
                           select(r.id)
                         }}
                         className={[
-                          'flex w-full min-w-0 items-baseline gap-2 border-l-2 px-4 py-2 text-left',
+                          'flex w-full min-w-0 flex-col gap-x-2 border-l-2 px-4 py-2 text-left',
+                          'sm:flex-row sm:items-baseline',
                           failed ? 'border-l-danger' : 'border-l-transparent',
                         ].join(' ')}
                       >
-                        <span
-                          className={`truncate font-medium ${failed ? 'text-danger' : 'text-ink-900'}`}
-                        >
-                          {r.name}
+                        <span className="flex min-w-0 items-baseline gap-2">
+                          <span
+                            className={`truncate font-medium ${failed ? 'text-danger' : 'text-ink-900'}`}
+                          >
+                            {r.name}
+                          </span>
+                          <span className="shrink-0 font-mono text-xs text-ink-500">{r.id}</span>
                         </span>
-                        <span className="shrink-0 font-mono text-xs text-ink-500">{r.id}</span>
+                        {/* The class column is gone below `sm`, so it rides with the
+                            name instead of being lost. Deliberately not aria-hidden:
+                            below `sm` the class cell is display:none and therefore
+                            unreadable to a screen reader, so this is the only place
+                            the class is announced. Above `sm` this span is the hidden
+                            one and the cell takes over, so it is never said twice. */}
+                        <span className="truncate text-xs text-ink-500 sm:hidden">{r.class}</span>
                         <span className="sr-only">
                           {failed
                             ? `, failed — GPA ${formatGpa(r.gpa)}, grade ${r.letter}`
@@ -243,7 +261,9 @@ export default function ResultsTable() {
                         </span>
                       </button>
                     </th>
-                    <td className="truncate px-2 py-2 text-ink-500">{r.class}</td>
+                    <td className="hidden truncate px-2 py-2 text-ink-500 sm:table-cell">
+                      {r.class}
+                    </td>
                     <td
                       className={`px-2 py-2 text-right font-mono tabular-nums ${
                         failed ? 'font-medium text-danger' : 'text-ink-900'
