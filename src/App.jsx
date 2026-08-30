@@ -157,7 +157,7 @@ function Layout() {
 
       <AppBar />
 
-      <main className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6">
         <Overview />
 
         <section aria-labelledby="data-section-heading" className="mt-10 space-y-3">
@@ -218,7 +218,7 @@ function Layout() {
       </main>
 
       <footer className="border-t border-ink-300">
-        <div className="mx-auto w-full max-w-6xl px-4 py-6 text-xs text-ink-500 sm:px-6">
+        <div className="mx-auto w-full max-w-6xl px-4 py-4 text-xs text-ink-500 sm:px-6">
           Team Miasma · LSH26-T036 · LofiStack Hackathon 2026
         </div>
       </footer>
