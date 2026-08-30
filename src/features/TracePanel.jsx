@@ -151,7 +151,7 @@ export default function TracePanel() {
         aria-label="Close the trace"
         tabIndex={-1}
         onClick={close}
-        className="absolute inset-0 h-full w-full cursor-default border-0 bg-ink-900/35 p-0"
+        className="no-print absolute inset-0 h-full w-full cursor-default border-0 bg-ink-900/35 p-0"
       />
 
       <div
@@ -161,7 +161,7 @@ export default function TracePanel() {
         aria-labelledby="trace-panel-heading"
         className="trace-panel relative flex h-full w-full flex-col border-l-2 border-l-accent bg-ink-50 sm:max-w-3xl"
       >
-        <div className="trace-panel-head flex items-baseline justify-between gap-4 px-5 py-3">
+        <div className="trace-panel-head no-print flex items-baseline justify-between gap-4 px-5 py-3">
           <div className="min-w-0">
             <p className="text-xs font-medium uppercase tracking-wide text-accent">
               Required item 3
@@ -213,7 +213,7 @@ export default function TracePanel() {
           finished reading: record that they checked it, and leave. Splitting them
           top and bottom made the panel feel like two unrelated strips.
         */}
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-ink-300 bg-white px-5 py-3">
+        <div className="no-print flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-ink-300 bg-white px-5 py-3">
           <div className="min-w-0 flex-1">
             {selected && reasons.length > 0 ? (
               <label className="flex cursor-pointer items-start gap-3">
@@ -242,14 +242,30 @@ export default function TracePanel() {
             )}
           </div>
 
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={close}
-            className="shrink-0 rounded-card border border-ink-300 bg-white px-4 py-2 text-sm font-medium text-ink-900 hover:bg-ink-100"
-          >
-            Close <span className="ml-1 font-normal text-ink-500">Esc</span>
-          </button>
+          <div className="flex shrink-0 gap-2">
+            {/*
+              A marksheet is one student's document, so the control sits with
+              that student rather than on the desk that lists all of them. The
+              print stylesheet emits this trace and nothing else, which is
+              exactly what is on screen when the button is pressed.
+            */}
+            <button
+              type="button"
+              onClick={() => window.print()}
+              disabled={!selected}
+              className="rounded-card border border-ink-300 bg-white px-4 py-2 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-40"
+            >
+              Print marksheet
+            </button>
+            <button
+              ref={closeRef}
+              type="button"
+              onClick={close}
+              className="rounded-card border border-ink-300 bg-white px-4 py-2 text-sm font-medium text-ink-900 hover:bg-ink-100"
+            >
+              Close <span className="ml-1 font-normal text-ink-500">Esc</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

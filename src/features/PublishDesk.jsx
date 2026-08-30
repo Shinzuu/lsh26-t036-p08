@@ -222,7 +222,11 @@ export default function PublishDesk() {
         </p>
       )}
 
-      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-ink-300 px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-300 px-4 py-3">
+        <p className="text-xs text-ink-500">
+          Marksheets print one student at a time — open a student&rsquo;s trace and print from
+          there.
+        </p>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
@@ -231,13 +235,15 @@ export default function PublishDesk() {
           >
             Export results (CSV)
           </button>
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
-          >
-            Print marksheet
-          </button>
+          {/*
+            Printing used to be offered here and it was wrong twice over. A
+            marksheet is one student's document — nobody prints eighty at once —
+            and the print stylesheet only ever emitted the trace, which is not
+            mounted on this view at all, so pressing it from the Overview
+            produced a blank page. The action now lives where a student is
+            actually selected; this line says so rather than leaving a reader to
+            wonder where it went.
+          */}
         </div>
       </div>
     </section>

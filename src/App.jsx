@@ -170,6 +170,39 @@ function LoadError() {
   )
 }
 
+/**
+ * The print action for the inline trace.
+ *
+ * A marksheet is one student's document, so printing belongs beside a selected
+ * student rather than on the sign-off desk, which lists all of them and mounts
+ * no trace at all — pressing it there emitted a blank page, because the print
+ * stylesheet only ever kept the trace.
+ *
+ * Naming the student on the button is the point: it is the difference between
+ * "print something" and "print this person's statement", and it stops a reader
+ * printing the wrong sheet after changing the selection in the roster beside it.
+ */
+function TraceActions() {
+  const { selected } = useSelected()
+  if (!selected) return null
+  return (
+    <div className="no-print flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card border border-ink-300 bg-white px-4 py-2.5">
+      <p className="text-sm text-ink-500">
+        Statement of result for{' '}
+        <span className="font-medium text-ink-900">{selected.name}</span>{' '}
+        <span className="font-mono text-xs">{selected.id}</span>
+      </p>
+      <button
+        type="button"
+        onClick={() => window.print()}
+        className="shrink-0 rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-900 hover:bg-ink-100"
+      >
+        Print marksheet
+      </button>
+    </div>
+  )
+}
+
 function OverviewView({ setView }) {
   const { dataset } = useDataset()
   const { students, failing } = useCounts()
@@ -222,7 +255,7 @@ function Layout() {
   const empty = !dataset || dataset.students.length === 0
 
   return (
-    <div className="min-h-dvh lg:pl-64">
+    <div className="app-shell min-h-dvh lg:pl-64">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-white"
@@ -268,7 +301,10 @@ function Layout() {
             {view === 'trace' && (
               <div className="grid gap-4 xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
                 <div className="min-w-0"><ResultsTable /></div>
-                <div className="min-w-0"><StudentTrace /></div>
+                <div className="min-w-0 space-y-3">
+                  <TraceActions />
+                  <StudentTrace />
+                </div>
               </div>
             )}
 

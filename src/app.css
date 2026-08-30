@@ -161,8 +161,11 @@ thead th {
    --------------------------------------------------------------------------- */
 @media print {
   .app-bar,
+  .app-sidebar,
+  header,
   nav,
   footer,
+  .no-print,
   section[aria-labelledby='overview-heading'],
   section[aria-labelledby='data-source-heading'],
   section[aria-labelledby='results-heading'],
@@ -170,6 +173,40 @@ thead th {
   section[aria-labelledby='publish-heading'],
   [role='alert'] {
     display: none !important;
+  }
+
+  /* The shell reserves a 16rem gutter for the sidebar; on paper there is none.
+     Targeted by class rather than by `body > div`, which never matched — React
+     mounts into #root, so the shell is a grandchild of body, and the sheet kept
+     printing 256px in from the left edge. */
+  .app-shell { padding-left: 0 !important; }
+
+  /*
+    The trace view is a two-column grid — roster on the left, trace on the right.
+    Hiding the roster removes the column's contents but not the track it sits in,
+    so the sheet printed in the right-hand half of the page and ran off the edge.
+    On paper there is one column.
+  */
+  main .grid { display: block !important; }
+
+  /*
+    Printing from the trace panel. The panel is a fixed, full-height overlay on
+    screen, which would otherwise print as one clipped page with the drawer's
+    chrome around it. On paper it is just the sheet: no backdrop, no border, no
+    height limit, and it flows rather than scrolls.
+  */
+  .trace-panel {
+    position: static !important;
+    max-width: none !important;
+    height: auto !important;
+    border: 0 !important;
+    background: #fff !important;
+  }
+
+  .trace-panel > div,
+  .trace-panel .overflow-y-auto {
+    overflow: visible !important;
+    padding: 0 !important;
   }
 
   /* Only the trace survives, and it prints as a sheet rather than a card. */
