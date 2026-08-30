@@ -1,5 +1,5 @@
 {
-  "name": "hackathon-starter-react",
+  "name": "lsh26-t036-p08",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "@supabase/supabase-js": "^2.112.3"
+    "react-dom": "^19.2.8"
   }
 }
