@@ -2,6 +2,16 @@
 
 One line each, newest on top. Chat evaporates; this file syncs.
 
+- T2/QA: `smoke-live.sh`'s staleness check FAILS against a perfectly current deploy.
+  Vite's asset filename hash is not reproducible across machines: the deployed JS is
+  byte-identical to a local build of the same commit, and the CSS differs only in
+  5th-decimal float noise from Tailwind's oklch->lab conversion. If the content greps
+  pass, the deploy is fine — do not re-deploy at 21:40 on the strength of that FAIL.
+- T2/QA: `flags.practicalFail` fires on any subject carrying a practical part below 8,
+  including one whose subject the practical rule was not applied to (a `practical:false`
+  subject given split marks, or a subject outside compulsory+optional). Only reachable
+  with an oddly shaped case; noted so U4's list is not mistrusted if it ever shows one.
+
 - U3: U1's hard-edges line in `DataSource.jsx` already calls `select(id)` on the
   student names it prints, so a student can be selected — and the trace opened —
   without `ResultsTable`. Useful for verifying U3/U4 live before U2 is merged, and
