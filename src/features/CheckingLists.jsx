@@ -183,11 +183,11 @@ export default function CheckingLists() {
           return (
             <div
               key={key}
-              className="flex min-w-0 flex-col rounded-card border border-ink-300 bg-white/60 dark:bg-ink-900/30"
+              className="flex min-w-0 flex-col rounded-card border border-ink-300 bg-white"
             >
               <div className="border-b border-ink-300 px-4 py-3">
                 <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="font-medium text-ink-900 dark:text-ink-50">{title}</h3>
+                  <h3 className="font-semibold text-accent">{title}</h3>
                   <span
                     className="shrink-0 rounded-full bg-accent-soft px-2.5 py-0.5 text-sm font-semibold text-accent tabular-nums"
                     aria-label={`${entries.length} students`}
@@ -224,7 +224,7 @@ export default function CheckingLists() {
                           }`}
                         >
                           <span className="flex items-baseline gap-2">
-                            <span className="truncate font-medium text-ink-900 dark:text-ink-50">
+                            <span className="truncate font-medium text-ink-900">
                               {r?.name ?? id}
                             </span>
                             <span className="shrink-0 text-xs text-ink-500 tabular-nums">{id}</span>
