@@ -37,11 +37,11 @@ A demo video is **optional** — the event-day guide lists it as
 ## Before the leader submits
 
 - [x] Fill the four `registered_name` fields in `evaluation-manifest.json`. — done, all four present with evidence paths.
-- [ ] **Make this repository public** and keep it public until results are announced.
-- [ ] Copy the **exact forty-character commit SHA** — a branch name or short SHA is
-      rejected by the form.
-- [ ] Confirm the live URL loads cold, on a phone, on mobile data.
-- [ ] Re-run `bash scripts/preflight.sh` and `node --test src/lib/grading.test.mjs`.
+- [x] **Make this repository public** and keep it public until results are announced. — done 23:24, verified anonymously (github.com/Shinzuu/lsh26-t036-p08 returns 200).
+- [x] Copy the **exact forty-character commit SHA** — a branch name or short SHA is
+      rejected by the form. — see the table below; re-copy if anything else merges.
+- [x] Confirm the live URL loads cold. — 200 in 0.13s with `Cache-Control: no-cache`; verified rendering at 375px with no horizontal scroll on any view. **Still worth one real phone on mobile data before submitting.**
+- [x] Re-run `bash scripts/preflight.sh` and the test suites. — preflight passes; `node --test src/lib/*.test.mjs` is 48/48; the independent-oracle cross-check is 43 pass 0 fail over all 25 published cases.
 
 ## The form fields for this project
 
@@ -50,7 +50,7 @@ A demo video is **optional** — the event-day guide lists it as
 | Problem ID | `P08` |
 | Repository URL | `https://github.com/Shinzuu/lsh26-t036-p08` |
 | Live URL | `https://lsh26-t036-p08.pages.dev` |
-| Commit SHA | *(fill with the exact 40 characters at freeze)* |
+| Commit SHA | `64f65dc92154a8c8320a1524d75f5bccf8edecfc` |
 
 ## Rules that cost marks if broken
 
