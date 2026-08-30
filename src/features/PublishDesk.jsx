@@ -105,40 +105,40 @@ export default function PublishDesk() {
 
   return (
     <section aria-labelledby="publish-heading" className="rounded-card border border-ink-300 bg-white">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ink-300 px-4 py-3">
+      <div className={`flex flex-wrap items-center justify-between gap-4 border-b border-ink-300 px-4 py-3 ${ready ? 'bg-ok-soft' : 'bg-ink-50'}`}>
         <div className="min-w-0">
-          <h3 id="publish-heading" className="font-semibold text-ink-900">
+          <h2 id="publish-heading" className="font-semibold text-ink-900">
             Sign-off before publishing
-          </h3>
-          <p className={`text-sm ${ready || total === 0 ? 'text-ok' : 'text-ink-700'}`}>
+          </h2>
+          <p className={`text-sm ${ready || total === 0 ? 'font-medium text-ok' : 'text-ink-700'}`}>
             {total === 0
               ? 'Nothing in this sheet needs a second pair of eyes.'
               : ready
-                ? 'Every flagged student checked. Ready to publish.'
-                : `${total - done} still to check before publishing.`}
+                ? 'Every flagged student signed off. Ready to publish.'
+                : `${total - done} still to sign off before publishing.`}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="text-right">
-            <p className="text-2xl font-semibold text-ink-900">
-              {done}<span className="text-ink-500"> / {total}</span>
-            </p>
-            <p className="text-xs uppercase tracking-wide text-ink-500">Checked</p>
-          </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <p className="flex items-baseline gap-1.5">
+            <span className={`text-2xl font-semibold tabular-nums ${ready ? 'text-ok' : 'text-ink-900'}`}>{done}</span>
+            <span className="text-sm text-ink-500 tabular-nums">/ {total} signed off</span>
+          </p>
           {total > 0 && (
-            <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => verifyAll(queue.map((q) => q.student.id))}
-                className="rounded-lg border border-ink-300 px-2.5 py-1 text-xs font-medium text-ink-700 hover:bg-ink-100"
+                disabled={ready}
+                className="rounded-card bg-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:cursor-default disabled:opacity-40"
               >
-                Check all
+                Sign off all
               </button>
               <button
                 type="button"
                 onClick={clearVerified}
-                className="rounded-lg px-2.5 py-1 text-xs text-ink-500 underline underline-offset-2 hover:text-ink-700"
+                disabled={done === 0}
+                className="rounded-card border border-ink-300 bg-white px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100 disabled:cursor-default disabled:opacity-40"
               >
                 Reset
               </button>
@@ -154,8 +154,8 @@ export default function PublishDesk() {
             aria-valuenow={done}
             aria-valuemin={0}
             aria-valuemax={total}
-            aria-label="Students checked"
-            className="h-1.5 w-full overflow-hidden rounded-full bg-ink-100"
+            aria-label="Students signed off"
+            className="h-2.5 w-full overflow-hidden rounded-full bg-accent-soft"
           >
             <div
               className={`h-full rounded-full transition-all duration-300 ${ready ? 'bg-ok' : 'bg-accent'}`}
@@ -166,7 +166,7 @@ export default function PublishDesk() {
       )}
 
       {total > 0 && (
-        <ul className="max-h-[calc(100dvh-28rem)] min-h-[12rem] divide-y divide-ink-300/60 overflow-y-auto px-1 py-1">
+        <ul className="max-h-[calc(100dvh-28rem)] min-h-[12rem] divide-y divide-ink-300/60 overflow-x-hidden overflow-y-auto px-1 py-1">
           {visible.map(({ student, why }) => {
             const isDone = verified.has(student.id)
             return (
@@ -192,7 +192,7 @@ export default function PublishDesk() {
                     select(student.id)
                     openTrace()
                   }}
-                  className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
+                  className="shrink-0 rounded-card px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
                 >
                   Open trace
                 </button>
@@ -215,7 +215,7 @@ export default function PublishDesk() {
           <button
             type="button"
             onClick={() => setLimit((n) => n + PAGE)}
-            className="rounded-lg border border-ink-300 bg-white px-2.5 py-1 font-medium text-ink-900 hover:bg-ink-100"
+            className="rounded-card border border-ink-300 bg-white px-2.5 py-1 font-medium text-ink-900 hover:bg-ink-100"
           >
             Show {Math.min(PAGE, hidden)} more
           </button>
@@ -231,7 +231,7 @@ export default function PublishDesk() {
           <button
             type="button"
             onClick={downloadCsv}
-            className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+            className="rounded-card bg-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
           >
             Export results (CSV)
           </button>
