@@ -72,8 +72,7 @@ export default function MarksImport() {
             Import a marks sheet
           </h3>
           <p className="mt-0.5 text-sm text-ink-500">
-            Paste straight out of a spreadsheet, or upload a CSV. Every row that cannot be
-            read is listed with the reason.
+            Paste from a spreadsheet or upload a CSV. Rejected rows are listed with the reason.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -98,8 +97,7 @@ export default function MarksImport() {
       {open && (
         <div className="space-y-3 px-4 py-3">
           <p className="text-sm text-ink-500">
-            One header row, then one row per student. Columns may be separated by commas or
-            tabs. A subject with a practical part takes{' '}
+            One header row, one row per student, commas or tabs. A practical subject takes{' '}
             <span className="font-mono text-ink-700">60+20</span> in one cell, or separate{' '}
             <span className="font-mono text-ink-700">PHY_theory</span> and{' '}
             <span className="font-mono text-ink-700">PHY_practical</span> columns.{' '}

@@ -231,12 +231,16 @@ export default function ResultsTable() {
         </div>
       )}
 
-      <p className="border-t border-ink-300 bg-ink-50/50 px-4 py-2 text-xs leading-relaxed text-ink-500">
-        <span className="font-medium text-ink-700">Reading a red row:</span> at least one
-        compulsory subject scored grade point 0, so the GPA is 0.00 and the grade is F. The
-        subject points behind it are not lost — open the trace to see them and the
-        uncancelled average.
-      </p>
+      {/* A legend, not an instruction. Anyone who needs it can open it; anyone
+          who can already read a red row is not made to scroll past 42 words. */}
+      <details className="border-t border-ink-300 bg-ink-50/50 px-4 py-2 text-xs text-ink-500">
+        <summary className="cursor-pointer font-medium text-ink-700">Reading a red row</summary>
+        <p className="mt-1 leading-relaxed">
+          At least one compulsory subject scored grade point 0, so the GPA is 0.00 and the
+          grade is F. The subject points behind it are not lost — open the trace to see them
+          and the uncancelled average.
+        </p>
+      </details>
     </section>
   )
 }
