@@ -277,18 +277,38 @@ function flatCase(overrides = {}, mutate = (c) => c) {
   })
 }
 
-test('D · [T2-01] an optional that is also compulsory is accepted, and counted twice', () => {
+test('D · [T2-01, FIXED] an optional that is also compulsory is now refused at the door', () => {
   const ds = flatCase({}, (c) => {
     c.students[0].optional = 'MAT'
     return c
   })
-  // parseDataset only checks the optional exists in `subjects`, not that it sits
-  // outside `compulsory`, so a malformed case loads without complaint.
-  assert.doesNotThrow(() => parseDataset(structuredClone(ds)))
+  // Was: parseDataset accepted this and the grade point was counted twice — once in
+  // compulsoryPoints and again as the optional bonus — so six subjects at 4.0 read
+  // 4.33 instead of 4.00, with no warning anywhere. Fixed in triage at 20:03.
+  assert.throws(
+    () => parseDataset(structuredClone(ds)),
+    /names "MAT" as its optional subject, but that is a compulsory subject/,
+    'the case must be refused with a message naming the subject',
+  )
+
+  // The engine itself is unchanged and still counts what it is given, which is why
+  // the guard belongs in parseDataset: nothing malformed can now reach this path.
   const r = studentResult(ds.students[0], ds)
-  assert.equal(r.compulsoryPoints, 24, 'MAT counted inside the compulsory sum')
-  assert.equal(r.optionalBonus, 2, 'and again as the optional bonus')
-  assert.equal(gpa(r), '4.33', 'six subjects at 4.0 should read 4.00, not 4.33')
+  assert.equal(gpa(r), '4.33', 'unreachable through the UI now, kept as the record of why')
+})
+
+test('D · [T2-01, FIXED] the guard does not reject any legitimate case', () => {
+  // The fix would be worse than the bug if it refused real data, so: every published
+  // case must still parse, and a normal optional must still be accepted.
+  assert.doesNotThrow(() => parseDataset(structuredClone(BOUNDARY)))
+  assert.doesNotThrow(() => parseDataset(structuredClone(flatCase())))
+  if (havePack) {
+    const pack = JSON.parse(readFileSync(FIXTURE, 'utf8'))
+    for (const ds of pack.cases) {
+      assert.doesNotThrow(() => parseDataset(structuredClone(ds)), `${ds.case_id} must still parse`)
+    }
+    assert.equal(pack.cases.length, 25)
+  }
 })
 
 test('D · [T2-02] the practical-fail flag fires where the practical rule was not applied', () => {
