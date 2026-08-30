@@ -1,76 +1,61 @@
-# <Project name> — Submission checklist template
+# Submission checklist — P08
 
-Worth 2 marks on its own ("repo, URL, picks declared, fields correct" —
-`brief/scoring-rubric.md` §6) and it gates the other 18 in Demo & documentation.
-Copy into each problem repo as `SUBMISSION.md`, fill in, and run this list top
-to bottom before the freeze.
+Run top to bottom before the merge freeze. Rules here are the event-day ones from the
+organizers' submission guide and the clarifications published with the problem set; they
+supersede anything written before 30 August.
 
-## The five required components
+## The clock
 
-`brief/rulebook.md` §8: *"A submission is complete only when all five of these
-exist, for each of your two problems."*
+| Time | What happens |
+|---|---|
+| 22:00 | Building ends. Every live URL is checked and screenshotted once — **that capture is what gets judged.** |
+| 00:00 | Submission deadline (Google Form). |
+| 01:00 | Late window ends. |
 
-| # | Required | Where it is | Status |
+**The early bonus is measured from the Google Form server receipt, not from any commit.**
+The organizers state plainly that commit times are not used. So committing costs nothing —
+what buys the bonus is submitting early, and only once at least three of the four required
+items pass on **both** of the team's problems. Receipts before 18:00 are rejected; at or
+after 22:00 they earn zero.
+
+## Required in this repository
+
+| # | Required | Where | Status |
 |---|---|---|---|
-| 1 | Source code submitted through the submission link | this repo, pushed to `main` | ☐ uploaded via the link |
-| 2 | A live URL that loads for a judge with no setup steps | <https://your-project.pages.dev> | ☐ |
-| 3 | A README — what it does, how to run it, what is mocked, what next | [`README.md`](README.md) | ☐ all four questions answered |
-| 4 | A demo video, **max 60 seconds** (see flag below), showing it working | record last | ☐ |
-| 5 | `LICENSES.md` listing every dependency, template and asset | [`LICENSES.md`](LICENSES.md) | ☐ |
-| 6 | `evaluation-manifest.json` — organizer-supplied template filled in: required declarations, per-member contributions, AI-tool use (29 Aug Discord ruling, `brief/qa-discord-29aug.md`) | repo root | ☐ template collected at 17:00, filled at freeze |
+| 1 | Complete source code for this one problem | this repo, `main` | ✅ |
+| 2 | A live URL that opens for a judge with no setup | <https://lsh26-t036-p08.pages.dev> | ✅ verified after every merge |
+| 3 | `README.md` — team ID, problem ID, live URL, setup and run steps, **proof each requirement is met**, major decisions, known limitations | [`README.md`](README.md) | ✅ |
+| 4 | `evaluation-manifest.json` — the organizer template, filled | repo root | ⚠️ complete except the four **registered names** |
+| 5 | `EVENT.md` — team ID, problem ID, event start code, pre-event material declaration, in the first event-work commit | [`EVENT.md`](EVENT.md) | ✅ |
+| 6 | `LICENSES.md` — every framework, library, starter, template, UI kit, font, icon and asset | [`LICENSES.md`](LICENSES.md) | ✅ verified with `npm view` |
+| 7 | A statement of the approach and each member's major contribution | [`README.md`](README.md) and the manifest | ✅ |
+| 8 | No password, API key, token, private key or personal data | `bash scripts/preflight.sh` | ✅ passes |
 
-**All six must be inside the final commit pushed before 22:00 — only the
-submitted commit SHA is judged; later pushes are ignored (29 Aug ruling).**
-Repo name must be lowercase `lsh26-t###-p##`, one repo per problem — for us
-(team LSH26-T036): `lsh26-t036-p##`.
+A demo video is **optional** — the event-day guide lists it as
+`demo_video_url_optional` in the manifest and does not require it in the repository.
 
-## Video length — SETTLED: maximum 60 seconds
+## Before the leader submits
 
-Official How-to-Submit doc (28 Aug, stated four times;
-`brief/how-to-submit-28aug.md`). Target **50–58 s** — over 60 risks the entire
-8-mark video component. `scripts/compress-video.sh` trims at 60 as a backstop.
+- [ ] Fill the four `registered_name` fields in `evaluation-manifest.json`.
+- [ ] **Make this repository public** and keep it public until results are announced.
+- [ ] Copy the **exact forty-character commit SHA** — a branch name or short SHA is
+      rejected by the form.
+- [ ] Confirm the live URL loads cold, on a phone, on mobile data.
+- [ ] Re-run `bash scripts/preflight.sh` and `node --test src/lib/grading.test.mjs`.
 
-## Video script — walk the four bullets, in order, on the live URL
+## The form fields for this project
 
-Show it working. Do not explain architecture. One take, no editing needed. Fill
-in the actions/lines per bullet before you record, and rehearse the click-path
-once.
+| Field | Value |
+|---|---|
+| Problem ID | `P08` |
+| Repository URL | `https://github.com/Shinzuu/lsh26-t036-p08` |
+| Live URL | `https://lsh26-t036-p08.pages.dev` |
+| Commit SHA | *(fill with the exact 40 characters at freeze)* |
 
-| Time | Do this | Say this |
-|---|---|---|
-| 0:00–0:08 | Load the live URL, cold. | Name the problem and the app in one sentence. |
-| 0:08–0:?? | Bullet 1's action, on screen. | One line naming what just happened. |
-| 0:??–0:?? | Bullet 2's action, on screen. | One line naming what just happened. |
-| 0:??–0:?? | Bullet 3's action, on screen. | One line naming what just happened. |
-| 0:??–0:?? | Bullet 4's action, on screen. | One line naming what just happened. |
-| final ~5s | URL back on screen. | One honest "what's next" line. |
+## Rules that cost marks if broken
 
-<!-- Full beat structure, worked example, and the fill-in pitch template live in
-     playbook/02-pitch-60s.md — use that to write the words, use this table to
-     block the timing against your actual four bullets. -->
-
-## Before the freeze
-
-- [ ] `npm run preflight` passes (secret scan + build + branding check)
-- [ ] No template branding left: `index.html` `<title>`, meta description
-- [ ] Live URL opened on a **phone**, on mobile data, core loop completed
-- [ ] Any gated/logged-out view checked in a private window — no data leaks that the
-      problem's bullets say should stay private
-- [ ] Every demo/seed login works on the live URL, if the problem uses one
-- [ ] Every `BOARD.md` row is `done-live`, and the row names the live-URL check
-      that was actually performed — not just "fixed" or "looks good"
-- [ ] README's MVP table matches what the video shows
-- [ ] Problem picks declared in the submission form, fields correct
-
-## Deadline mechanics
-
-Rulebook §8: at the deadline, write access is revoked, commit history is
-captured, and **every live URL gets an automated HTTP check and a full-page
-screenshot**. Judging happens later against that archive — so a host that
-sleeps afterwards costs nothing, but a deploy you broke in the last few minutes
-is entirely on you.
-
-The early-submission bonus is computed from the **last commit across both
-repositories**, not from a form: 1.25 marks per complete 30 minutes remaining,
-and **zero unless at least 3 of 4 MVP bullets verify working on each problem.**
-So once the board is green, stop committing — every later push costs marks.
+- **Never squash, delete or rewrite git history after 18:00.** Judges read the history.
+- Published clarifications are part of the specification, not advice — judges mark by
+  them. The six that govern P08 are quoted verbatim in `SPEC.md` and `README.md`.
+- The submission can be edited until the deadline, but **the recorded time becomes the
+  time of the last edit**, which re-prices the bonus.

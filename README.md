@@ -115,6 +115,26 @@ failed-subject list matched, and all three checking lists matched exactly — 0 
 Tests prove the cases we thought of; the independent cross-check catches the ones we did
 not.
 
+## How we approached it, and who did what
+
+The grading rules are the whole problem — the interface is a view of them — so they were
+built first, as a pure module with a `node --test` suite written before any component, and
+the four required items were split one per person so nothing waited on anything else. The
+organizers' published fixture shape was adopted directly as the data model rather than
+designing our own and mapping onto it, because judges test with unpublished cases in that
+shape and a translation layer is one more thing that can be wrong about data we have never
+seen. Every item was verified on the deployed URL, not on a local server, before being
+recorded as done.
+
+| Member | GitHub | Major contribution |
+|---|---|---|
+| *(registered name)* | `Shinzuu` | Integrator: the app shell, the state module, the shared stylesheet and page, every merge, deploy and live verification. Also required item 1 — the seeded case, the fixture validator, and the hard-edge finder that derives the four edge types from whatever data is loaded. |
+| *(registered name)* | `RimjhimD` | Required item 2 — the grading engine as a pure tested module: grade points per subject, the GPA calculation with the optional-subject rule and the 5.00 cap, letter grades, the compulsory-failure cancellation and the checking-list derivation, plus the results table. |
+| *(registered name)* | `MDRobiulhassan` | Required item 3 — the per-student trace: every subject with the real mark used, the grade point it produced and the rule sentence that decided it, the named subject that cancelled a strong average, and the written-out GPA arithmetic. |
+| *(registered name)* | `Dip-it11` | Required item 4 — the office checking list: the three lists required by R-29 with counts, each student's specific reason for appearing, and cross-list badging. |
+
+The same information, with per-member evidence paths, is in `evaluation-manifest.json`.
+
 ## The grading rules implemented
 
 Exactly as written in the problem statement and its published clarifications, and no
