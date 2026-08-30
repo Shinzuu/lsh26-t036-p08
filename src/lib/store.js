@@ -14,7 +14,7 @@
 // createElement rather than JSX: this file is `.js`, and Vite's React plugin only
 // transforms `.jsx`. SPEC.md fixes the filename, so the one element it renders is
 // written the long way instead of renaming the module out from under four units.
-import { createContext, createElement, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, createElement, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { SEED } from './dataset.js'
 import { studentResult } from './grading.js'
 
@@ -24,6 +24,10 @@ export function StoreProvider({ children }) {
   const [dataset, setDataset] = useState(SEED)
   const [error, setError] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
+  // Which flagged students the office has checked by hand and signed off.
+  // In memory only: a judge reloading gets a clean desk, and no school's marks
+  // are ever written anywhere.
+  const [verified, setVerified] = useState(() => new Set())
 
   // Derived, never stored. A dataset of 80 students recomputes in well under a
   // frame, so memoising on the dataset identity is enough.
@@ -77,12 +81,28 @@ export function StoreProvider({ children }) {
     }
     setDataset(next)
     setSelectedId(null)
+    setVerified(new Set())
     setError(null)
   }
 
+  const toggleVerified = useCallback((id) => {
+    setVerified((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
+  const verifyAll = useCallback((ids) => setVerified(new Set(ids)), [])
+  const clearVerified = useCallback(() => setVerified(new Set()), [])
+
   const value = useMemo(
-    () => ({ dataset, results, load, error, setError, selectedId, select: setSelectedId }),
-    [dataset, results, error, selectedId],
+    () => ({
+      dataset, results, load, error, setError, selectedId, select: setSelectedId,
+      verified, toggleVerified, verifyAll, clearVerified,
+    }),
+    [dataset, results, error, selectedId, verified, toggleVerified, verifyAll, clearVerified],
   )
 
   return createElement(DatasetContext.Provider, { value }, children)
@@ -98,6 +118,15 @@ function ctx() {
 export function useDataset() {
   const { dataset, results, load, error, setError } = ctx()
   return { dataset, results, load, error, setError }
+}
+
+/**
+ * The sign-off desk: which flagged students the office has checked by hand.
+ * { verified, toggleVerified, verifyAll, clearVerified }
+ */
+export function useVerification() {
+  const { verified, toggleVerified, verifyAll, clearVerified } = ctx()
+  return { verified, toggleVerified, verifyAll, clearVerified }
 }
 
 /** { selectedId, select, selected } — `selected` is the studentResult, or null. */

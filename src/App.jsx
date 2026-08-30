@@ -19,6 +19,7 @@ import DataSource from './features/DataSource.jsx'
 import ResultsTable from './features/ResultsTable.jsx'
 import StudentTrace from './features/StudentTrace.jsx'
 import CheckingLists from './features/CheckingLists.jsx'
+import PublishDesk from './features/PublishDesk.jsx'
 
 const APP_NAME = 'Result Processor'
 const TAGLINE = 'Takes a school’s raw marks and produces the final result the same way every time — showing which rule decided every number, so a wrong entry is caught before results are published.'
@@ -28,6 +29,7 @@ const SECTIONS = [
   { id: 'section-results', label: 'Results', item: 'Item 2' },
   { id: 'section-trace', label: 'Trace', item: 'Item 3' },
   { id: 'section-checking', label: 'Checking list', item: 'Item 4' },
+  { id: 'section-publish', label: 'Publish', item: null },
 ]
 
 function AppBar() {
@@ -207,6 +209,19 @@ function Layout() {
                 blurb="Every student whose result was changed by the optional subject rule, a practical fail, or an absence."
               />
               <CheckingLists />
+            </section>
+
+            {/* Beyond the four required items: the job the office is actually
+                doing. Sign every flagged student off, then leave with the two
+                artefacts a school needs — a results file and a marksheet. */}
+            <section aria-labelledby="publish-section-heading" className="mt-12 space-y-3">
+              <SectionHeading
+                id="section-publish"
+                item="Publishing"
+                title="Sign off, then publish"
+                blurb="Work through the flagged students, then take the results file for the office and the marksheet for the parent."
+              />
+              <PublishDesk />
             </section>
           </>
         )}

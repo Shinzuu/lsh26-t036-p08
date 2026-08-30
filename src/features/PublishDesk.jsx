@@ -1,0 +1,197 @@
+/**
+ * The publishing desk. INTEGRATOR-OWNED.
+ *
+ * The four required items answer "what is the result and why". This answers the
+ * question a school actually has, which is "can we publish yet" — the job the
+ * exam office is doing when it opens this at all.
+ *
+ * Nothing here changes a single grade. It reads the same engine output the rest
+ * of the app does, tracks which flagged students a human has signed off, and
+ * refuses to call the sheet ready until every one of them has been. Then it
+ * hands over the two artefacts a school leaves with: a results file for the
+ * office, and a printable marksheet for a parent.
+ */
+import { useMemo } from 'react'
+import { useDataset, useSelected, useVerification } from '../lib/store.js'
+import { checkingLists } from '../lib/grading.js'
+
+function toCsv(dataset, results) {
+  const codes = [...dataset.compulsory]
+  const head = ['Student ID', 'Name', 'Class', ...codes, 'Optional', 'Optional GP', 'GPA', 'Letter', 'Failed subjects']
+  const rows = results.map((r) => {
+    const cells = codes.map((c) => {
+      const s = r.subjects?.[c]
+      if (!s) return ''
+      return s.absent ? 'AB' : `${s.mark} (${s.gradePoint})`
+    })
+    return [
+      r.id, r.name, r.class, ...cells,
+      r.optional, r.optionalGradePoint ?? '',
+      r.gpa.toFixed(2), r.letter,
+      (r.failedCompulsory ?? []).join(' '),
+    ]
+  })
+  return [head, ...rows]
+    .map((row) => row.map((v) => {
+      const t = String(v ?? '')
+      return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t
+    }).join(','))
+    .join('\n')
+}
+
+export default function PublishDesk() {
+  const { dataset, results } = useDataset()
+  const { verified, toggleVerified, verifyAll, clearVerified } = useVerification()
+  const { select } = useSelected()
+
+  // One row per student who needs a human eye, with every reason they were flagged.
+  const queue = useMemo(() => {
+    const lists = checkingLists(results)
+    const reasons = new Map()
+    const add = (r, why) => {
+      if (!reasons.has(r.id)) reasons.set(r.id, { student: r, why: [] })
+      reasons.get(r.id).why.push(why)
+    }
+    lists.optional.forEach((r) => add(r, 'optional rule'))
+    lists.practicalFail.forEach((r) => add(r, 'practical fail'))
+    lists.absent.forEach((r) => add(r, 'absent mark'))
+    return [...reasons.values()].sort((a, b) => b.why.length - a.why.length || a.student.id.localeCompare(b.student.id))
+  }, [results])
+
+  const done = queue.filter((q) => verified.has(q.student.id)).length
+  const total = queue.length
+  const ready = total > 0 && done === total
+  const pct = total === 0 ? 100 : Math.round((done / total) * 100)
+
+  function downloadCsv() {
+    const blob = new Blob([toCsv(dataset, results)], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `results-${dataset.case_id}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <section aria-labelledby="publish-heading" className="rounded-card border border-ink-300 bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ink-300 px-4 py-3">
+        <div>
+          <h3 id="publish-heading" className="font-semibold text-ink-900">
+            Sign-off before publishing
+          </h3>
+          <p className="mt-0.5 text-sm text-ink-500">
+            {total === 0
+              ? 'Nothing in this sheet needs a second pair of eyes.'
+              : `${total} ${total === 1 ? 'student needs' : 'students need'} checking by hand before these results go out.`}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-2xl font-semibold text-ink-900">
+              {done}<span className="text-ink-500"> / {total}</span>
+            </p>
+            <p className="text-xs uppercase tracking-wide text-ink-500">Checked</p>
+          </div>
+          {total > 0 && (
+            <div className="flex flex-col gap-1">
+              <button
+                type="button"
+                onClick={() => verifyAll(queue.map((q) => q.student.id))}
+                className="rounded-lg border border-ink-300 px-2.5 py-1 text-xs font-medium text-ink-700 hover:bg-ink-100"
+              >
+                Check all
+              </button>
+              <button
+                type="button"
+                onClick={clearVerified}
+                className="rounded-lg px-2.5 py-1 text-xs text-ink-500 underline underline-offset-2 hover:text-ink-700"
+              >
+                Reset
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {total > 0 && (
+        <div className="px-4 pt-3">
+          <div
+            role="progressbar"
+            aria-valuenow={done}
+            aria-valuemin={0}
+            aria-valuemax={total}
+            aria-label="Students checked"
+            className="h-1.5 w-full overflow-hidden rounded-full bg-ink-100"
+          >
+            <div
+              className={`h-full rounded-full transition-all duration-300 ${ready ? 'bg-ok' : 'bg-accent'}`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {total > 0 && (
+        <ul className="max-h-72 divide-y divide-ink-300/60 overflow-y-auto px-1 py-1">
+          {queue.map(({ student, why }) => {
+            const isDone = verified.has(student.id)
+            return (
+              <li key={student.id} className="flex items-center gap-3 px-3 py-2">
+                <input
+                  type="checkbox"
+                  id={`verify-${student.id}`}
+                  checked={isDone}
+                  onChange={() => toggleVerified(student.id)}
+                  className="size-4 shrink-0 accent-[var(--color-accent)]"
+                />
+                <label
+                  htmlFor={`verify-${student.id}`}
+                  className={`min-w-0 flex-1 cursor-pointer text-sm ${isDone ? 'text-ink-500 line-through' : 'text-ink-900'}`}
+                >
+                  <span className="font-medium">{student.name}</span>{' '}
+                  <span className="font-mono text-xs text-ink-500">{student.id}</span>
+                  <span className="ml-2 text-ink-500">{why.join(' · ')}</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => select(student.id)}
+                  className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
+                >
+                  Open trace
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-300 px-4 py-3">
+        <p className={`text-sm ${ready || total === 0 ? 'text-ok' : 'text-ink-500'}`}>
+          {total === 0
+            ? 'Ready to publish.'
+            : ready
+              ? 'Every flagged student has been checked. Ready to publish.'
+              : `${total - done} still to check before publishing.`}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={downloadCsv}
+            className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+          >
+            Export results (CSV)
+          </button>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="rounded-lg border border-ink-300 px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100"
+          >
+            Print marksheet
+          </button>
+        </div>
+      </div>
+    </section>
+  )
+}

@@ -147,3 +147,53 @@ thead th {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* ---------------------------------------------------------------------------
+   Print: the marksheet.
+
+   A school's last step is handing a parent a piece of paper. Printing the
+   screen would hand them a screenshot of an app, so print drops everything
+   except the selected student's trace — which already carries every subject,
+   the mark used, the grade point, the rule that decided it and the GPA
+   working. That is a marksheet, and it is the same numbers the office signed
+   off on.
+   --------------------------------------------------------------------------- */
+@media print {
+  .app-bar,
+  nav,
+  footer,
+  section[aria-labelledby='overview-heading'],
+  section[aria-labelledby='data-source-heading'],
+  section[aria-labelledby='results-heading'],
+  section[aria-labelledby='checking-lists-heading'],
+  section[aria-labelledby='publish-heading'],
+  [role='alert'] {
+    display: none !important;
+  }
+
+  /* Only the trace survives, and it prints as a sheet rather than a card. */
+  section[aria-labelledby='trace-heading'] {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  section[aria-labelledby='trace-heading']::before {
+    content: 'Statement of result · issued from the school’s tabulation record';
+    display: block;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px double #000;
+    font-size: 11pt;
+    font-weight: 600;
+  }
+
+  main { padding: 0 !important; max-width: none !important; }
+  body { background: #fff !important; font-size: 10pt; }
+
+  /* Every row must survive the page break intact. */
+  tr, li { break-inside: avoid; }
+
+  @page { margin: 16mm; }
+}
