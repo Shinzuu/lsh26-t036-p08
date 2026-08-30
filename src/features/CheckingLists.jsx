@@ -227,7 +227,7 @@ export default function CheckingLists() {
                   {total === 0 ? 'No students loaded yet.' : 'No student on this list.'}
                 </p>
               ) : (
-                <ul className="max-h-80 divide-y divide-ink-300/60 overflow-y-auto">
+                <ul className="max-h-80 divide-y divide-ink-300/60 overflow-x-hidden overflow-y-auto">
                   {entries.slice(0, limitFor(key)).map((entry, i) => {
                     const r = resolve(entry, byId)
                     const id = r?.id ?? (typeof entry === 'string' ? entry : entry?.id) ?? `row-${i}`
