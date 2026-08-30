@@ -1,52 +1,39 @@
-# EVENT.md
+# Event Start Record
 
-| Field | Value |
-|---|---|
-| Team | Miasma |
-| Team ID | LSH26-T036 |
-| Problem ID | P08 — School Result Processing and GPA Engine |
-| Tier | Tier 02 (7.5 difficulty credit) |
-| Event start code | LSH26-8490-C900 |
-| Live URL | https://lsh26-t036-p08.pages.dev |
-| Repository | https://github.com/Shinzuu/lsh26-t036-p08 |
+- **Team ID:** `LSH26-T036`
+- **Problem ID:** `P08`
+- **Repository:** `lsh26-t036-p08`
+- **Event start code:** `LSH26-8490-C900`
+- **Repository created before release:** No — created at 18:10 on 30 August 2026, after the 17:30 release.
 
-## Declaration of material already in this repository before 6:00 PM
+## Material present before 6:00 PM
 
-This repository's first commit, `Starter kit baseline (pre-existing work, MIT — see
-LICENSES.md)`, is a **generic React starter kit** the team wrote before the event. It
-contains no solution to P08 or to any other released problem — it was written before the
-problems were known.
+Every item below comes from one source: a **generic React starter kit the team wrote
+before the event**, in the team's own private preparation repository. It contains no
+solution to P08 or to any other released problem — it was written before the problems
+were known. It was copied into this repository as the first commit,
+`Starter kit baseline (pre-existing work, MIT — see LICENSES.md)`, and everything from the
+second commit onward is event work.
 
-What it is:
+| Material | Source or original location | What was already present |
+|---|---|---|
+| Application shell | `starter-kit-react/` in the team's private preparation repository | `index.html`, `src/main.jsx`, `src/App.jsx`, `src/app.css`, `src/lib/Loop.jsx` — a Vite + React 19 + Tailwind 4 shell with a placeholder demo component and template branding |
+| Build and deploy configuration | same | `package.json`, `package-lock.json`, `vite.config.js`, `jsconfig.json`, `public/favicon.svg` |
+| Storage adapter | same, `src/lib/db.js` | A generic adapter that uses `localStorage` when no Supabase keys are present and Supabase when they are. Unused in this project — P08 needs no persistence |
+| Capability library | same, `src/recipes/` | Thirteen generic, self-contained modules with their own `node --test` suites: csv-import, search-filter, charts, auth, upload, map, realtime, llm, bd-formats, export, matching, queue, corroborate. None is specific to any released problem. Unused recipes are deleted before submission |
+| Colour palettes | same, `src/themes/` | Five accessible palettes (slate, civic, ochre, plum, noir) as CSS custom-property blocks, plus a contrast test |
+| Helper scripts | same, `scripts/` | `preflight.sh` (scans for committed secrets), `smoke-live.sh` (checks a deployed URL returns 200 and serves the expected bundle), `compress-video.sh` |
+| Documentation templates | same | `README-TEMPLATE.md`, `SUBMISSION-TEMPLATE.md`, `LICENSES.md`, `BOARD.md`, `DEPLOY.md`, `CLAUDE.md` |
+| Database templates | same, `templates/` and `schema.sql` | A generic Supabase roles-and-RLS schema and a permissions template. Unused in this project |
 
-- A Vite + React 19 + Tailwind 4 application shell: `index.html`, `src/main.jsx`,
-  `src/App.jsx`, `src/app.css`, and a placeholder `src/lib/Loop.jsx` demo component.
-- `src/lib/db.js`, a storage adapter that falls back to `localStorage` when no Supabase
-  keys are present.
-- `src/recipes/`, a library of thirteen generic, self-contained capabilities
-  (csv-import, search-filter, charts, auth, upload, map, realtime, llm, bd-formats,
-  export, matching, queue, corroborate) with their own test suites. None of them is
-  specific to any released problem. Unused recipes are deleted before submission.
-- `src/themes/`, five accessible colour palettes.
-- `scripts/preflight.sh` (secret scan), `scripts/smoke-live.sh` (live-deployment check),
-  `scripts/compress-video.sh`.
-- Documentation templates: `README-TEMPLATE.md`, `SUBMISSION-TEMPLATE.md`, `LICENSES.md`,
-  `BOARD.md`, `DEPLOY.md`, `CLAUDE.md`.
+Third-party dependencies and their licences are listed in `LICENSES.md`.
 
-Everything from the second commit onward is event work, written after 6:00 PM on
-30 August 2026.
+**Sample data.** `src/data/seed-p08.json` is case PUB-01 from the organizers' published
+participant release v2.1 fixture `P08_school_results_public.json`, copied unmodified. It
+was added during event work, not before 6:00 PM, and is used as the application's seed so
+the live URL is never empty. Any case in the same shape can also be pasted or uploaded.
 
-## Third-party material
+## Declaration
 
-Listed in full with licences in `LICENSES.md`.
-
-## Sample data
-
-`src/data/seed-p08.json` is case PUB-01 from the organizers' published participant
-release v2.1 fixture `P08_school_results_public.json`, copied unmodified. It is used as
-the application's seed data so the live URL is never empty. The application also accepts
-any case in the same shape by paste or file upload.
-
-## AI assistant use
-
-Disclosed in `README.md`.
+This file was added in the first event-work commit. The team will preserve the repository
+history until results are announced.
