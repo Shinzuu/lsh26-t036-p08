@@ -130,3 +130,20 @@ thead th {
   font-variant: small-caps;
   letter-spacing: 0.04em;
 }
+
+/* The shell now gives every section a labelled heading, so a panel's own title
+   would be the second heading saying the same thing. Keep them in the
+   accessibility tree — they are what `aria-labelledby` points at — and take them
+   out of the visual flow. The trace's own heading stays visible because it is not
+   a duplicate: it names the selected student. */
+#results-heading,
+#checking-lists-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
