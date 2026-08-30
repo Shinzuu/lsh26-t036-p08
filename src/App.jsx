@@ -25,7 +25,7 @@ import MarksImport from './features/MarksImport.jsx'
 import TracePanel from './features/TracePanel.jsx'
 
 const APP_NAME = 'Result Processor'
-const TAGLINE = 'Takes a school’s raw marks and produces the final result the same way every time — showing which rule decided every number, so a wrong entry is caught before results are published.'
+const TAGLINE = 'Every result, and the rule that decided it.'
 
 const SECTIONS = [
   { id: 'section-publish', label: 'Sign off', item: null },
@@ -176,7 +176,6 @@ function Layout() {
               id="section-publish"
               item="Start here"
               title="What still needs checking"
-              blurb="Sign off every flagged student, then take the results file for the office and the marksheet for the parent. The evidence behind each one is in the sections below."
             />
             <PublishDesk />
           </section>
@@ -187,7 +186,6 @@ function Layout() {
             id="section-data"
             item="Required item 1"
             title="The marks this result is built from"
-            blurb="Seeded with the organizers’ published case. Load any case in the same shape to recompute everything below."
           />
           <DataSource />
           <LoadError />
@@ -206,7 +204,6 @@ function Layout() {
                   id="section-results"
                   item="Required item 2"
                   title="Every student’s result"
-                  blurb="A grade point for each subject, the final GPA and the letter grade."
                 />
                 <ResultsTable />
               </section>
@@ -216,7 +213,6 @@ function Layout() {
                   id="section-trace"
                   item="Required item 3"
                   title="Why that result"
-                  blurb="Every subject with the mark used, the grade point it produced, and the rule that decided it."
                 />
                 <StudentTrace />
               </section>
@@ -227,7 +223,6 @@ function Layout() {
                 id="section-checking"
                 item="Required item 4"
                 title="Check these before results go out"
-                blurb="Every student whose result was changed by the optional subject rule, a practical fail, or an absence."
               />
               <CheckingLists />
             </section>
@@ -237,7 +232,6 @@ function Layout() {
                 id="section-summary"
                 item="Beyond the four"
                 title="How the sheet performed"
-                blurb="Pass rate by class, where the grades fell, and which subject cost the most students their result."
               />
               <ClassSummary />
             </section>
